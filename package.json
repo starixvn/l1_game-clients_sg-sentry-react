@@ -1,0 +1,60 @@
+{
+  "name": "sg-sentry",
+  "version": "1.0.0",
+  "description": "Sentry logging and error tracking library for SG projects",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "sentry",
+    "logging",
+    "error-tracking",
+    "monitoring",
+    "sg",
+    "typescript"
+  ],
+  "author": "SG Team",
+  "license": "MIT",
+  "dependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.0.0",
+    "@types/react": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^30.0.5",
+    "rimraf": "^3.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sg-team/sg-sentry.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sg-team/sg-sentry/issues"
+  },
+  "homepage": "https://github.com/sg-team/sg-sentry#readme"
+}
