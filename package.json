@@ -15,8 +15,8 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run build",
-    "demo": "tsx demo/index.tsx",
-    "demo:dev": "tsx --watch demo/index.tsx"
+    "demo": "node demo/server.js",
+    "demo:dev": "node demo/server.js"
   },
   "keywords": [
     "sentry",

@@ -1,3 +1,5 @@
+<!-- @format -->
+
 # SG-Sentry
 
 A clean, maintainable Sentry logging and error tracking library for SG projects, providing a unified interface for error monitoring, performance tracking, and workflow management.
@@ -47,56 +49,56 @@ npm install sg-sentry
 ### Basic Usage
 
 ```typescript
-import { configureSentry, logInfo, logError, startWorkflow } from 'sg-sentry';
+import { configureSentry, logInfo, logError, startWorkflow } from "sg-sentry";
 
 // Initialize Sentry
 configureSentry({
-    enabled: true,
-    defaultLogLevel: 'info',
-    enableWorkflowTracking: true,
-    enablePerformanceTracking: true
+  enabled: true,
+  defaultLogLevel: "info",
+  enableWorkflowTracking: true,
+  enablePerformanceTracking: true,
 });
 
 // Basic logging
-logInfo('MyComponent', 'Application started successfully');
-logError('MyComponent', new Error('Something went wrong'));
+logInfo("MyComponent", "Application started successfully");
+logError("MyComponent", new Error("Something went wrong"));
 
 // Workflow tracking
-const workflowId = 'user-login-123';
-startWorkflow(workflowId, 'User Login', 'AuthComponent', { userId: '123' });
+const workflowId = "user-login-123";
+startWorkflow(workflowId, "User Login", "AuthComponent", { userId: "123" });
 ```
 
 ### React Integration
 
 ```typescript
-import React from 'react';
-import { useSentry } from 'sg-sentry';
+import React from "react";
+import { useSentry } from "sg-sentry";
 
 const MyComponent: React.FC = () => {
-    const { logInfo, logError, startWorkflow, trackPerformance } = useSentry({
-        componentName: 'MyComponent',
-        logLevel: 'debug',
-        enableWorkflowTracking: true
-    });
+  const { logInfo, logError, startWorkflow, trackPerformance } = useSentry({
+    componentName: "MyComponent",
+    logLevel: "debug",
+    enableWorkflowTracking: true,
+  });
 
-    const handleUserAction = async () => {
-        const workflowId = 'user-action-' + Date.now();
-        
-        startWorkflow(workflowId, 'User Action', { action: 'button-click' });
-        
-        try {
-            await trackPerformance('api-call', async () => {
-                const result = await fetch('/api/data');
-                return result.json();
-            });
-            
-            logInfo('User action completed successfully');
-        } catch (error) {
-            logError(error);
-        }
-    };
+  const handleUserAction = async () => {
+    const workflowId = "user-action-" + Date.now();
 
-    return <button onClick={handleUserAction}>Click Me</button>;
+    startWorkflow(workflowId, "User Action", { action: "button-click" });
+
+    try {
+      await trackPerformance("api-call", async () => {
+        const result = await fetch("/api/data");
+        return result.json();
+      });
+
+      logInfo("User action completed successfully");
+    } catch (error) {
+      logError(error);
+    }
+  };
+
+  return <button onClick={handleUserAction}>Click Me</button>;
 };
 ```
 
@@ -105,14 +107,16 @@ const MyComponent: React.FC = () => {
 ### Core Functions
 
 #### Configuration
+
 ```typescript
-configureSentry(config)           // Initialize Sentry system
-enableSentry()                    // Enable Sentry globally
-disableSentry()                   // Disable Sentry globally
-setSentryLogLevel(level)          // Set global log level
+configureSentry(config); // Initialize Sentry system
+enableSentry(); // Enable Sentry globally
+disableSentry(); // Disable Sentry globally
+setSentryLogLevel(level); // Set global log level
 ```
 
 #### Logging
+
 ```typescript
 logTrace(component, message, context?)
 logDebug(component, message, context?)
@@ -123,6 +127,7 @@ logFatal(component, error, context?)
 ```
 
 #### Workflow Tracking
+
 ```typescript
 startWorkflow(id, name, component, metadata?)
 updateWorkflow(id, state, component, metadata?)
@@ -130,53 +135,60 @@ completeWorkflow(id, component, success?, metadata?)
 ```
 
 #### Performance Tracking
+
 ```typescript
-trackPerformance(component, operation, asyncFunction)
+trackPerformance(component, operation, asyncFunction);
 ```
 
 ### React Hooks
 
 #### `useSentry(options)`
+
 Main hook with full functionality:
+
 ```typescript
 const sentry = useSentry({
-    componentName: 'MyComponent',
-    logLevel: 'debug',
-    enableWorkflowTracking: true,
-    enablePerformanceTracking: true
+  componentName: "MyComponent",
+  logLevel: "debug",
+  enableWorkflowTracking: true,
+  enablePerformanceTracking: true,
 });
 ```
 
 #### `useSimpleSentry(componentName)`
+
 Simple hook for basic logging only:
+
 ```typescript
-const sentry = useSimpleSentry('MyComponent');
+const sentry = useSimpleSentry("MyComponent");
 ```
 
 #### `useWorkflowSentry(componentName, logLevel?)`
+
 Hook focused on workflow tracking:
+
 ```typescript
-const sentry = useWorkflowSentry('MyComponent', 'info');
+const sentry = useWorkflowSentry("MyComponent", "info");
 ```
 
 ### Types
 
 ```typescript
 enum SentryLogLevel {
-    TRACE = 'trace',
-    DEBUG = 'debug',
-    INFO = 'info',
-    WARNING = 'warning',
-    ERROR = 'error',
-    FATAL = 'fatal'
+  TRACE = "trace",
+  DEBUG = "debug",
+  INFO = "info",
+  WARNING = "warning",
+  ERROR = "error",
+  FATAL = "fatal",
 }
 
 enum WorkflowState {
-    STARTED = 'started',
-    IN_PROGRESS = 'in_progress',
-    COMPLETED = 'completed',
-    FAILED = 'failed',
-    CANCELLED = 'cancelled'
+  STARTED = "started",
+  IN_PROGRESS = "in_progress",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  CANCELLED = "cancelled",
 }
 ```
 
@@ -196,6 +208,7 @@ npm run demo:dev
 ```
 
 The demo showcases:
+
 - ✅ All logging levels
 - ✅ Error handling and capture
 - ✅ Workflow tracking
@@ -236,55 +249,67 @@ npm run lint:fix
 ## 📋 Configuration Options
 
 ### Global Configuration
+
 ```typescript
 interface GlobalSentryConfig {
-    enabled?: boolean;
-    defaultLogLevel?: SentryLogLevel;
-    enableWorkflowTracking?: boolean;
-    enablePerformanceTracking?: boolean;
-    enableConsoleOverride?: boolean;
-    dsn?: string;
-    environment?: string;
-    release?: string;
+  enabled?: boolean;
+  defaultLogLevel?: SentryLogLevel;
+  enableWorkflowTracking?: boolean;
+  enablePerformanceTracking?: boolean;
+  enableConsoleOverride?: boolean;
+  dsn?: string;
+  environment?: string;
+  release?: string;
 }
 ```
 
 ### Component Configuration
+
 ```typescript
 interface ComponentConfig {
-    logLevel?: SentryLogLevel;
-    enabled?: boolean;
-    enableWorkflowTracking?: boolean;
-    enablePerformanceTracking?: boolean;
+  logLevel?: SentryLogLevel;
+  enabled?: boolean;
+  enableWorkflowTracking?: boolean;
+  enablePerformanceTracking?: boolean;
 }
 ```
 
 ## 🔧 Advanced Usage
 
 ### Custom Storage Implementation
+
 ```typescript
-import { IStorage, SentryConfigStorage } from 'sg-sentry';
+import { IStorage, SentryConfigStorage } from "sg-sentry";
 
 class CustomStorage implements IStorage {
-    getItem(key: string): string | null { /* implementation */ }
-    setItem(key: string, value: string): void { /* implementation */ }
-    removeItem(key: string): void { /* implementation */ }
-    clear(): void { /* implementation */ }
+  getItem(key: string): string | null {
+    /* implementation */
+  }
+  setItem(key: string, value: string): void {
+    /* implementation */
+  }
+  removeItem(key: string): void {
+    /* implementation */
+  }
+  clear(): void {
+    /* implementation */
+  }
 }
 
 const configStorage = new SentryConfigStorage(new CustomStorage());
 ```
 
 ### Direct Manager Usage
+
 ```typescript
-import { SentryManager } from 'sg-sentry';
+import { SentryManager } from "sg-sentry";
 
 const manager = SentryManager.getInstance();
 manager.initialize({
-    globalConfig: {
-        enabled: true,
-        defaultLogLevel: 'debug'
-    }
+  globalConfig: {
+    enabled: true,
+    defaultLogLevel: "debug",
+  },
 });
 ```
 
@@ -304,6 +329,7 @@ MIT License - see LICENSE file for details
 ## 🆘 Support
 
 For issues and questions:
+
 - Create an issue on GitHub
 - Check the demo for usage examples
-- Review the test files for implementation details 
+- Review the test files for implementation details

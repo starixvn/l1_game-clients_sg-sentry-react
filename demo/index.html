@@ -19,107 +19,523 @@
             -moz-osx-font-smoothing: grayscale;
             background-color: #f5f5f5;
             color: #333;
+            line-height: 1.6;
         }
 
-        #root {
-            min-height: 100vh;
-        }
-
-        /* Loading spinner */
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-size: 18px;
-            color: #666;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin-right: 15px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Error message */
-        .error {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
-            text-align: center;
         }
 
-        .error h1 {
-            color: #e74c3c;
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-bottom: 20px;
         }
 
-        .error p {
-            color: #666;
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .panel h3 {
+            color: #34495e;
+            margin: 15px 0 10px 0;
+            font-size: 1.1em;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
             margin-bottom: 15px;
         }
 
-        .error button {
-            background-color: #3498db;
-            color: white;
+        .btn {
+            padding: 8px 16px;
             border: none;
-            padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #3498db;
+            color: white;
         }
 
-        .error button:hover {
+        .btn:hover {
             background-color: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background-color: #27ae60;
+        }
+
+        .btn-success:hover {
+            background-color: #229954;
+        }
+
+        .btn-warning {
+            background-color: #f39c12;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        .counter-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .logs-container {
+            height: 400px;
+            overflow-y: auto;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+
+        .log-entry.timestamp {
+            color: #95a5a6;
+        }
+
+        .log-entry.info {
+            color: #3498db;
+        }
+
+        .log-entry.warning {
+            color: #f39c12;
+        }
+
+        .log-entry.error {
+            color: #e74c3c;
+        }
+
+        .log-entry.success {
+            color: #27ae60;
+        }
+
+        .status-bar {
+            background-color: #34495e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.enabled {
+            background-color: #27ae60;
+        }
+
+        .status-indicator.disabled {
+            background-color: #e74c3c;
+        }
+
+        .instructions {
+            background-color: #e8f4fd;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .instructions h3 {
+            color: #2980b9;
+            margin-bottom: 15px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="root">
-        <div class="loading">
-            <div class="spinner"></div>
-            <span>Loading SG-Sentry Demo...</span>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 SG-Sentry Demo</h1>
+            <p>Interactive demonstration of the SG-Sentry logging and error tracking library</p>
+        </div>
+
+        <div class="status-bar">
+            <div>
+                <span class="status-indicator enabled" id="statusIndicator"></span>
+                <span id="statusText">Sentry Enabled</span>
+            </div>
+            <div>
+                <span>Log Level: </span>
+                <select id="logLevelSelect" onchange="changeLogLevel()">
+                    <option value="trace">TRACE</option>
+                    <option value="debug">DEBUG</option>
+                    <option value="info" selected>INFO</option>
+                    <option value="warning">WARNING</option>
+                    <option value="error">ERROR</option>
+                    <option value="fatal">FATAL</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="demo-grid">
+            <!-- Controls Panel -->
+            <div class="panel">
+                <h2>🎮 Controls</h2>
+                
+                <div class="counter">
+                    <span>Counter: </span>
+                    <span class="counter-value" id="counterValue">0</span>
+                    <button class="btn" onclick="incrementCounter()">Increment</button>
+                    <button class="btn" onclick="resetCounter()">Reset</button>
+                </div>
+
+                <h3>📝 Basic Logging</h3>
+                <div class="button-group">
+                    <button class="btn" onclick="testBasicLogging()">Test Basic Logging</button>
+                    <button class="btn btn-warning" onclick="testErrorLogging()">Test Error Logging</button>
+                    <button class="btn btn-danger" onclick="testErrorCapture()">Test Error Capture</button>
+                </div>
+
+                <h3>🔄 Workflow Tracking</h3>
+                <div class="button-group">
+                    <button class="btn" onclick="testWorkflowTracking()">Test Workflow</button>
+                    <button class="btn" onclick="testWorkflowWithSteps()">Test Workflow Steps</button>
+                </div>
+
+                <h3>⚡ Performance Tracking</h3>
+                <div class="button-group">
+                    <button class="btn" id="perfBtn" onclick="testPerformanceTracking()">Test Performance</button>
+                    <button class="btn btn-warning" id="failedPerfBtn" onclick="testFailedPerformance()">Test Failed Performance</button>
+                </div>
+
+                <h3>🎛️ Configuration</h3>
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="enableSentry()">Enable Sentry</button>
+                    <button class="btn btn-danger" onclick="disableSentry()">Disable Sentry</button>
+                    <button class="btn" onclick="clearLogs()">Clear Logs</button>
+                </div>
+            </div>
+
+            <!-- Logs Panel -->
+            <div class="panel">
+                <h2>📋 Activity Logs</h2>
+                <div class="logs-container" id="logsContainer">
+                    <div class="log-entry info">Welcome to SG-Sentry Demo!</div>
+                    <div class="log-entry info">Open your browser console to see detailed logs.</div>
+                    <div class="log-entry info">Try clicking the buttons to test different features.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>📖 Instructions</h3>
+            <ul>
+                <li><strong>Open your browser's developer console</strong> (F12) to see detailed Sentry logs</li>
+                <li><strong>Try different log levels</strong> using the dropdown to see how filtering works</li>
+                <li><strong>Test workflow tracking</strong> to see how complex operations are monitored</li>
+                <li><strong>Use performance tracking</strong> to measure operation timing</li>
+                <li><strong>Test error scenarios</strong> to see error handling in action</li>
+                <li><strong>Enable/disable Sentry</strong> to see how the system responds</li>
+            </ul>
         </div>
     </div>
 
+    <!-- Load the SG-Sentry demo -->
+    <script src="demo.js"></script>
+    
     <script>
-        // Error handling for demo loading
-        window.addEventListener('error', function(event) {
-            const root = document.getElementById('root');
-            root.innerHTML = `
-                <div class="error">
-                    <h1>Demo Loading Error</h1>
-                    <p>Failed to load the SG-Sentry demo.</p>
-                    <p>Error: ${event.error?.message || 'Unknown error'}</p>
-                    <button onclick="location.reload()">Reload Page</button>
-                </div>
-            `;
+        // Demo state
+        let counter = 0;
+        let isPerformingOperation = false;
+
+        // Initialize the demo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configure SG-Sentry
+            window.SGSentry.configure({
+                enabled: true,
+                defaultLogLevel: 'info',
+                enableWorkflowTracking: true,
+                enablePerformanceTracking: true
+            });
+
+            updateStatus();
+            addLog('Demo initialized successfully', 'info');
         });
 
-        // Handle unhandled promise rejections
-        window.addEventListener('unhandledrejection', function(event) {
-            const root = document.getElementById('root');
-            root.innerHTML = `
-                <div class="error">
-                    <h1>Demo Loading Error</h1>
-                    <p>Failed to load the SG-Sentry demo.</p>
-                    <p>Promise Error: ${event.reason?.message || 'Unknown promise error'}</p>
-                    <button onclick="location.reload()">Reload Page</button>
-                </div>
-            `;
-        });
+        // Utility functions
+        function addLog(message, type = 'info') {
+            const container = document.getElementById('logsContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
+            container.appendChild(logEntry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateStatus() {
+            const isEnabled = window.SGSentry.isEnabled();
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            
+            indicator.className = `status-indicator ${isEnabled ? 'enabled' : 'disabled'}`;
+            statusText.textContent = isEnabled ? 'Sentry Enabled' : 'Sentry Disabled';
+        }
+
+        function changeLogLevel() {
+            const level = document.getElementById('logLevelSelect').value;
+            window.SGSentry.configure({ defaultLogLevel: level });
+            addLog(`Log level changed to: ${level.toUpperCase()}`, 'info');
+        }
+
+        function enableSentry() {
+            window.SGSentry.configure({ enabled: true });
+            updateStatus();
+            addLog('Sentry enabled', 'success');
+        }
+
+        function disableSentry() {
+            window.SGSentry.configure({ enabled: false });
+            updateStatus();
+            addLog('Sentry disabled', 'warning');
+        }
+
+        function clearLogs() {
+            document.getElementById('logsContainer').innerHTML = '';
+            addLog('Logs cleared', 'info');
+        }
+
+        // Counter functions
+        function incrementCounter() {
+            counter++;
+            document.getElementById('counterValue').textContent = counter;
+            window.SGSentry.logInfo('DemoComponent', `Counter incremented to ${counter}`, { counter });
+            addLog(`Counter incremented to ${counter}`, 'info');
+        }
+
+        function resetCounter() {
+            counter = 0;
+            document.getElementById('counterValue').textContent = counter;
+            window.SGSentry.logInfo('DemoComponent', 'Counter reset', { counter });
+            addLog('Counter reset to 0', 'info');
+        }
+
+        // Test functions
+        function testBasicLogging() {
+            const context = { counter, timestamp: Date.now() };
+            
+            window.SGSentry.logTrace('DemoComponent', 'Trace message from demo', context);
+            window.SGSentry.logDebug('DemoComponent', 'Debug message from demo', context);
+            window.SGSentry.logInfo('DemoComponent', 'Info message from demo', context);
+            window.SGSentry.logWarning('DemoComponent', 'Warning message from demo', context);
+            
+            addLog('Basic logging test completed', 'success');
+        }
+
+        function testErrorLogging() {
+            try {
+                throw new Error('This is a test error for demonstration');
+            } catch (error) {
+                window.SGSentry.logError('DemoComponent', error, { counter, context: 'error-test' });
+                addLog('Error logging test completed', 'success');
+            }
+        }
+
+        function testErrorCapture() {
+            const error = new Error('Captured error test');
+            window.SGSentry.captureError(error, { 
+                component: 'DemoComponent',
+                counter,
+                context: 'error-capture-test'
+            });
+            addLog('Error capture test completed', 'success');
+        }
+
+        async function testWorkflowTracking() {
+            const workflowId = `demo-workflow-${Date.now()}`;
+            
+            window.SGSentry.startWorkflow(workflowId, 'Demo Workflow', 'DemoComponent', { 
+                counter, 
+                userAction: 'workflow-test' 
+            });
+            
+            addLog(`Started workflow: ${workflowId}`, 'info');
+            
+            // Simulate workflow completion
+            setTimeout(() => {
+                window.SGSentry.completeWorkflow(workflowId, 'DemoComponent', true, { 
+                    result: 'success', 
+                    finalCount: counter 
+                });
+                addLog('Workflow completed successfully', 'success');
+            }, 1000);
+        }
+
+        async function testWorkflowWithSteps() {
+            const workflowId = `demo-workflow-steps-${Date.now()}`;
+            
+            window.SGSentry.startWorkflow(workflowId, 'Demo Workflow with Steps', 'DemoComponent');
+            addLog('Started workflow with steps', 'info');
+            
+            // Step 1
+            setTimeout(() => {
+                window.SGSentry.updateWorkflow(workflowId, 'in_progress', 'DemoComponent', { step: 'processing' });
+                addLog('Workflow step: processing', 'info');
+            }, 500);
+            
+            // Step 2
+            setTimeout(() => {
+                window.SGSentry.updateWorkflow(workflowId, 'in_progress', 'DemoComponent', { step: 'validating' });
+                addLog('Workflow step: validating', 'info');
+            }, 1000);
+            
+            // Complete
+            setTimeout(() => {
+                window.SGSentry.completeWorkflow(workflowId, 'DemoComponent', true, { result: 'success' });
+                addLog('Workflow with steps completed', 'success');
+            }, 1500);
+        }
+
+        async function testPerformanceTracking() {
+            if (isPerformingOperation) return;
+            
+            isPerformingOperation = true;
+            const perfBtn = document.getElementById('perfBtn');
+            perfBtn.textContent = 'Running...';
+            perfBtn.disabled = true;
+            
+            try {
+                const result = await window.SGSentry.trackPerformance('DemoComponent', 'demo-operation', async () => {
+                    // Simulate async operation
+                    await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 500));
+                    return 'Operation completed successfully';
+                });
+                
+                addLog(`Performance tracking completed: ${result}`, 'success');
+            } catch (error) {
+                addLog(`Performance tracking failed: ${error.message}`, 'error');
+            } finally {
+                isPerformingOperation = false;
+                perfBtn.textContent = 'Test Performance';
+                perfBtn.disabled = false;
+            }
+        }
+
+        async function testFailedPerformance() {
+            if (isPerformingOperation) return;
+            
+            isPerformingOperation = true;
+            const failedPerfBtn = document.getElementById('failedPerfBtn');
+            failedPerfBtn.textContent = 'Running...';
+            failedPerfBtn.disabled = true;
+            
+            try {
+                await window.SGSentry.trackPerformance('DemoComponent', 'failed-operation', async () => {
+                    // Simulate failed operation
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    throw new Error('Operation failed intentionally');
+                });
+            } catch (error) {
+                window.SGSentry.logError('DemoComponent', error, { context: 'failed-operation-test' });
+                addLog('Failed operation test completed (error logged)', 'success');
+            } finally {
+                isPerformingOperation = false;
+                failedPerfBtn.textContent = 'Test Failed Performance';
+                failedPerfBtn.disabled = false;
+            }
+        }
     </script>
 </body>
 </html> 
