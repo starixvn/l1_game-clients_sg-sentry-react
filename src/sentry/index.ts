@@ -165,4 +165,4 @@ export { useSessionReplay } from './hooks/useSessionReplay';
 
 // Components exports (keeping existing components for now)
 export { LoggingDemo } from './components';
-export { SentryLogContext, SentryLogProvider, useGameSentryLogger, useSentryLog } from './components/sentry-log-context'; 
+export { SentryLogContext, SentryLogProvider, useGameSentryLogger, useSentryLog, HotLeagueWallErrorBoundary } from './components/sentry-log-context'; 

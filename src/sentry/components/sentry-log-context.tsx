@@ -249,7 +249,7 @@ export const SentryLogProvider: React.FC<SentryLogProviderProps> = ({
 }) => {
     // Initialize Session Replay
     const sessionReplay = useSessionReplay(sentryConfig?.componentName || 'SentryLogProvider');
-    
+
     // Initialize state
     const [state, dispatch] = useReducer(sentryLogReducer, {
         ...initialState,
