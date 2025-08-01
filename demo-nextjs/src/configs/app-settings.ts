@@ -169,9 +169,22 @@ export const initializeSentry = async () => {
             timestamp: Date.now()
         });
 
+        // Wait for Sentry SDK to be available
+        let retries = 0;
+        const maxRetries = 10;
+        while (typeof window !== 'undefined' && !(window as any).Sentry && retries < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            retries++;
+        }
+
+        if (typeof window === 'undefined' || !(window as any).Sentry) {
+            throw new Error('Sentry SDK not available after initialization');
+        }
+
         // Dynamically import sg-sentry to avoid circular dependencies
         const { configureSentry } = await import('sg-sentry');
         
+        // Configure sg-sentry with the loaded settings
         configureSentry({
             dsn: appSettings.sentry.dsn,
             environment: appSettings.sentry.environment,
@@ -186,12 +199,22 @@ export const initializeSentry = async () => {
             environment: appSettings.sentry.environment,
             timestamp: Date.now()
         });
+
+        // Test that Sentry is working by sending a test message
+        const { logInfo } = await import('sg-sentry');
+        logInfo('AppSettings', 'Sentry initialization test message', {
+            environment: appSettings.sentry.environment,
+            timestamp: Date.now()
+        });
+
+        console.log('[AppSettings] Sentry test message sent successfully');
     } catch (error) {
         console.error('[AppSettings] Failed to initialize Sentry configuration', {
             error: error instanceof Error ? error.message : String(error),
             timestamp: Date.now()
         });
         console.warn('Failed to initialize Sentry configuration:', error);
+        throw error; // Re-throw to let the provider handle it
     }
 };
 

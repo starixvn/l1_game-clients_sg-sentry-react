@@ -7,6 +7,68 @@ interface SentryProviderProps {
     children: React.ReactNode;
 }
 
+// Load Sentry SDK from CDN
+const loadSentrySDK = (): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        // Check if Sentry is already loaded
+        if (typeof window !== 'undefined' && (window as any).Sentry) {
+            console.log('[SentryProvider] Sentry SDK already loaded');
+            resolve();
+            return;
+        }
+
+        // Load Sentry SDK from CDN
+        const script = document.createElement('script');
+        script.src = 'https://browser.sentry-cdn.com/7.88.0/bundle.min.js';
+        script.integrity = 'sha384-97phG3Cb0Vm+2N88y9hJ7CExwrkO9B9FvxZ5Oq3hQGfFSK/BrojizIIReHJ1J8yS';
+        script.crossOrigin = 'anonymous';
+        
+        script.onload = () => {
+            console.log('[SentryProvider] Sentry SDK loaded successfully');
+            resolve();
+        };
+        
+        script.onerror = () => {
+            console.error('[SentryProvider] Failed to load Sentry SDK');
+            reject(new Error('Failed to load Sentry SDK'));
+        };
+        
+        document.head.appendChild(script);
+    });
+};
+
+// Initialize Sentry SDK
+const initializeSentrySDK = (dsn: string, environment: string): void => {
+    if (typeof window === 'undefined' || !(window as any).Sentry) {
+        console.warn('[SentryProvider] Sentry SDK not available');
+        return;
+    }
+
+    const Sentry = (window as any).Sentry;
+    
+    // Check if already initialized
+    if (Sentry.getCurrentHub().getClient()) {
+        console.log('[SentryProvider] Sentry SDK already initialized');
+        return;
+    }
+
+    try {
+        Sentry.init({
+            dsn: dsn,
+            environment: environment,
+            release: '1.0.0',
+            debug: true,
+            tracesSampleRate: 1.0,
+            replaysSessionSampleRate: 1.0,
+            replaysOnErrorSampleRate: 1.0
+        });
+        console.log('[SentryProvider] Sentry SDK initialized successfully');
+    } catch (error) {
+        console.error('[SentryProvider] Failed to initialize Sentry SDK:', error);
+        throw error;
+    }
+};
+
 export function SentryProvider({ children }: SentryProviderProps) {
     const [isInitialized, setIsInitialized] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -15,9 +77,23 @@ export function SentryProvider({ children }: SentryProviderProps) {
         const initSentry = async () => {
             try {
                 console.log('[SentryProvider] Starting Sentry initialization...');
+                
+                // Step 1: Load Sentry SDK from CDN
+                await loadSentrySDK();
+                
+                // Step 2: Initialize Sentry SDK with configuration
+                // We'll get the DSN from the app settings
+                const { appSettings } = await import('@/configs/app-settings');
+                initializeSentrySDK(
+                    appSettings.sentry.dsn,
+                    appSettings.sentry.environment
+                );
+                
+                // Step 3: Initialize sg-sentry configuration
                 await initializeSentry();
+                
                 setIsInitialized(true);
-                console.log('[SentryProvider] Sentry initialized successfully');
+                console.log('[SentryProvider] Sentry initialization completed successfully');
             } catch (err) {
                 const errorMessage = err instanceof Error ? err.message : 'Unknown error during Sentry initialization';
                 console.error('[SentryProvider] Failed to initialize Sentry:', errorMessage);
