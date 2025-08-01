@@ -19,11 +19,16 @@ export function ErrorSimulator() {
     const componentName = 'ErrorSimulator';
     const componentConfig = getComponentConfig(componentName);
 
+    // Safe fallback values
+    const logLevel = componentConfig?.logLevel || 'debug';
+    const enableWorkflowTracking = componentConfig?.enableWorkflowTracking || false;
+    const enablePerformanceTracking = componentConfig?.enablePerformanceTracking || false;
+
     const [isSimulating, setIsSimulating] = useState(false);
     const [lastError, setLastError] = useState<string>('');
 
     const simulateError = async (errorType: string) => {
-        if (componentConfig.enableWorkflowTracking) {
+        if (enableWorkflowTracking) {
             const workflowId = `error-simulation-${Date.now()}`;
             startWorkflow(workflowId, `Simulate ${errorType} Error`, componentName, {
                 errorType,
@@ -35,7 +40,7 @@ export function ErrorSimulator() {
         setLastError('');
 
         try {
-            if (componentConfig.enablePerformanceTracking) {
+            if (enablePerformanceTracking) {
                 await trackPerformance(componentName, `simulate-${errorType}-error`, async () => {
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 });
@@ -76,7 +81,7 @@ export function ErrorSimulator() {
             setLastError(errorMessage);
 
             // Log the error based on component configuration
-            switch (componentConfig.logLevel) {
+            switch (logLevel) {
                 case 'trace':
                     logTrace(componentName, `Simulated ${errorType} error`, { errorType, error: errorMessage });
                     break;
@@ -90,22 +95,22 @@ export function ErrorSimulator() {
                     logWarning(componentName, `Simulated ${errorType} error`, { errorType, error: errorMessage });
                     break;
                 case 'error':
-                    logError(componentName, error, { errorType, timestamp: Date.now() });
+                    logError(componentName, error as Error, { errorType, timestamp: Date.now() });
                     break;
                 case 'fatal':
-                    logFatal(componentName, error, { errorType, timestamp: Date.now() });
+                    logFatal(componentName, error as Error, { errorType, timestamp: Date.now() });
                     break;
                 default:
-                    logError(componentName, error, { errorType, timestamp: Date.now() });
+                    logError(componentName, error as Error, { errorType, timestamp: Date.now() });
             }
 
             // Capture error in Sentry
-            captureError(error, {
+            captureError(error as Error, {
                 tags: { errorType, component: componentName },
                 extra: { simulation: true, timestamp: Date.now() }
             });
 
-            if (componentConfig.enableWorkflowTracking) {
+            if (enableWorkflowTracking) {
                 const workflowId = `error-simulation-${Date.now()}`;
                 completeWorkflow(workflowId, componentName, false, {
                     errorType,
@@ -137,9 +142,9 @@ export function ErrorSimulator() {
                     Simulate various types of errors to test SG-Sentry logging and error tracking capabilities.
                 </p>
                 <div className="mt-4 flex items-center space-x-4 text-sm text-gray-500">
-                    <span>Log Level: <span className="font-medium">{componentConfig.logLevel}</span></span>
-                    <span>Workflow: <span className="font-medium">{componentConfig.enableWorkflowTracking ? 'Enabled' : 'Disabled'}</span></span>
-                    <span>Performance: <span className="font-medium">{componentConfig.enablePerformanceTracking ? 'Enabled' : 'Disabled'}</span></span>
+                    <span>Log Level: <span className="font-medium">{logLevel}</span></span>
+                    <span>Workflow: <span className="font-medium">{enableWorkflowTracking ? 'Enabled' : 'Disabled'}</span></span>
+                    <span>Performance: <span className="font-medium">{enablePerformanceTracking ? 'Enabled' : 'Disabled'}</span></span>
                 </div>
             </div>
 
@@ -200,15 +205,15 @@ export function ErrorSimulator() {
                     </div>
                     <div>
                         <span className="text-blue-600 font-medium">Log Level:</span>
-                        <span className="ml-2 text-blue-800">{componentConfig.logLevel}</span>
+                        <span className="ml-2 text-blue-800">{logLevel}</span>
                     </div>
                     <div>
                         <span className="text-blue-600 font-medium">Workflow Tracking:</span>
-                        <span className="ml-2 text-blue-800">{componentConfig.enableWorkflowTracking ? '✅' : '❌'}</span>
+                        <span className="ml-2 text-blue-800">{enableWorkflowTracking ? '✅' : '❌'}</span>
                     </div>
                     <div>
                         <span className="text-blue-600 font-medium">Performance Tracking:</span>
-                        <span className="ml-2 text-blue-800">{componentConfig.enablePerformanceTracking ? '✅' : '❌'}</span>
+                        <span className="ml-2 text-blue-800">{enablePerformanceTracking ? '✅' : '❌'}</span>
                     </div>
                 </div>
             </div>

@@ -22,7 +22,7 @@ export function DemoLayout({ tabs, activeTab, onTabChange, children }: DemoLayou
     const componentConfig = getComponentConfig(componentName);
 
     const handleTabClick = (tabId: string) => {
-        if (componentConfig.enableWorkflowTracking) {
+        if (componentConfig?.enableWorkflowTracking) {
             logInfo(componentName, 'Tab navigation workflow', {
                 fromTab: activeTab,
                 toTab: tabId,
@@ -31,6 +31,11 @@ export function DemoLayout({ tabs, activeTab, onTabChange, children }: DemoLayou
         }
         onTabChange(tabId);
     };
+
+    // Safe fallback values
+    const logLevel = componentConfig?.logLevel || 'debug';
+    const enableWorkflowTracking = componentConfig?.enableWorkflowTracking || false;
+    const enablePerformanceTracking = componentConfig?.enablePerformanceTracking || false;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -47,13 +52,13 @@ export function DemoLayout({ tabs, activeTab, onTabChange, children }: DemoLayou
                         </div>
                         <div className="flex items-center space-x-4">
                             <div className="bg-blue-500 px-3 py-1 rounded-full text-xs font-medium">
-                                {componentConfig.logLevel.toUpperCase()}
+                                {logLevel.toUpperCase()}
                             </div>
                             <div className="text-blue-100 text-sm">
-                                {componentConfig.enableWorkflowTracking ? '🔄' : '⏸️'} Workflow
+                                {enableWorkflowTracking ? '🔄' : '⏸️'} Workflow
                             </div>
                             <div className="text-blue-100 text-sm">
-                                {componentConfig.enablePerformanceTracking ? '⚡' : '⏸️'} Performance
+                                {enablePerformanceTracking ? '⚡' : '⏸️'} Performance
                             </div>
                         </div>
                     </div>
@@ -99,7 +104,7 @@ export function DemoLayout({ tabs, activeTab, onTabChange, children }: DemoLayou
                         </div>
                         <div className="flex items-center space-x-4 text-sm text-gray-300">
                             <span>Component: {componentName}</span>
-                            <span>Log Level: {componentConfig.logLevel}</span>
+                            <span>Log Level: {logLevel}</span>
                         </div>
                     </div>
                 </div>

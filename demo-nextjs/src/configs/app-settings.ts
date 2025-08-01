@@ -1,5 +1,3 @@
-import { logInfo, logError, logWarning, configureSentry } from 'sg-sentry';
-
 import SG_LOCAL_CONFIG from './sg/configs.LOCAL_1.json';
 import VG_LOCAL_CONFIG from './vg/configs.LOCAL_1.json';
 
@@ -57,14 +55,19 @@ export interface EnvironmentConfig {
     appType: number;
 }
 
+// Component configuration interface
+export interface ComponentConfig {
+    logLevel: string;
+    enableWorkflowTracking: boolean;
+    enablePerformanceTracking: boolean;
+}
+
 /**
  * Get environment configuration based on app environment and site ID
  */
 export const getEnvironmentConfig = ({ appEnv, siteId }: AppConfig): EnvironmentConfig => {
-    const componentName = 'AppSettings';
-
     try {
-        logInfo(componentName, 'Loading environment configuration', {
+        console.log('[AppSettings] Loading environment configuration', {
             appEnv,
             siteId,
             timestamp: Date.now()
@@ -85,7 +88,7 @@ export const getEnvironmentConfig = ({ appEnv, siteId }: AppConfig): Environment
 
         if (!environmentsConfig) {
             const error = `No environment configuration found for siteId: ${siteId}, appEnv: ${appEnv}`;
-            logError(componentName, error, {
+            console.error('[AppSettings]', error, {
                 siteId,
                 appEnv,
                 availableSites: Object.keys(configMaps),
@@ -95,7 +98,7 @@ export const getEnvironmentConfig = ({ appEnv, siteId }: AppConfig): Environment
             throw new Error(error);
         }
 
-        logInfo(componentName, 'Environment configuration loaded successfully', {
+        console.log('[AppSettings] Environment configuration loaded successfully', {
             appEnv,
             siteId,
             configKeys: Object.keys(environmentsConfig),
@@ -104,7 +107,7 @@ export const getEnvironmentConfig = ({ appEnv, siteId }: AppConfig): Environment
 
         return environmentsConfig;
     } catch (error) {
-        logError(componentName, 'Failed to load environment configuration', {
+        console.error('[AppSettings] Failed to load environment configuration', {
             error: error instanceof Error ? error.message : String(error),
             appEnv,
             siteId,
@@ -158,16 +161,17 @@ export const appSettings = getEnvironmentConfig({
 /**
  * Initialize Sentry with the loaded configuration
  */
-export const initializeSentry = () => {
-    const componentName = 'AppSettings';
-
+export const initializeSentry = async () => {
     try {
-        logInfo(componentName, 'Initializing Sentry configuration', {
+        console.log('[AppSettings] Initializing Sentry configuration', {
             dsn: appSettings.sentry.dsn,
             environment: appSettings.sentry.environment,
             timestamp: Date.now()
         });
 
+        // Dynamically import sg-sentry to avoid circular dependencies
+        const { configureSentry } = await import('sg-sentry');
+        
         configureSentry({
             dsn: appSettings.sentry.dsn,
             environment: appSettings.sentry.environment,
@@ -178,12 +182,12 @@ export const initializeSentry = () => {
             componentLogging: appSettings.sentry.componentLogging
         });
 
-        logInfo(componentName, 'Sentry configuration initialized successfully', {
+        console.log('[AppSettings] Sentry configuration initialized successfully', {
             environment: appSettings.sentry.environment,
             timestamp: Date.now()
         });
     } catch (error) {
-        logError(componentName, 'Failed to initialize Sentry configuration', {
+        console.error('[AppSettings] Failed to initialize Sentry configuration', {
             error: error instanceof Error ? error.message : String(error),
             timestamp: Date.now()
         });
@@ -194,19 +198,17 @@ export const initializeSentry = () => {
 /**
  * Get component configuration for a specific component
  */
-export const getComponentConfig = (componentName: string) => {
-    const componentNameForLog = 'AppSettings';
-
+export const getComponentConfig = (componentName: string): ComponentConfig => {
     try {
         const componentConfig = appSettings.sentry.componentLogging.components[componentName];
-
+        
         if (!componentConfig) {
-            logWarning(componentNameForLog, `No configuration found for component: ${componentName}`, {
+            console.warn(`[AppSettings] No configuration found for component: ${componentName}`, {
                 componentName,
                 availableComponents: Object.keys(appSettings.sentry.componentLogging.components),
                 timestamp: Date.now()
             });
-
+            
             return {
                 logLevel: appSettings.sentry.componentLogging.defaultLogLevel,
                 enableWorkflowTracking: false,
@@ -214,7 +216,7 @@ export const getComponentConfig = (componentName: string) => {
             };
         }
 
-        logInfo(componentNameForLog, 'Component configuration retrieved successfully', {
+        console.log('[AppSettings] Component configuration retrieved successfully', {
             componentName,
             config: componentConfig,
             timestamp: Date.now()
@@ -222,12 +224,12 @@ export const getComponentConfig = (componentName: string) => {
 
         return componentConfig;
     } catch (error) {
-        logError(componentNameForLog, 'Failed to get component configuration', {
+        console.error('[AppSettings] Failed to get component configuration', {
             error: error instanceof Error ? error.message : String(error),
             componentName,
             timestamp: Date.now()
         });
-
+        
         return {
             logLevel: appSettings.sentry.componentLogging.defaultLogLevel,
             enableWorkflowTracking: false,
