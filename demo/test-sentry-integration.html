@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentry Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-danger {
+            background: #dc3545;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Sentry Integration Test</h1>
+        
+        <div id="status" class="status warning">
+            Initializing Sentry...
+        </div>
+        
+        <div class="test-section">
+            <h3>Basic Sentry Tests</h3>
+            <button class="btn" onclick="testBasicMessage()">Test Basic Message</button>
+            <button class="btn" onclick="testError()">Test Error</button>
+            <button class="btn btn-danger" onclick="testException()">Test Exception</button>
+        </div>
+        
+                 <div class="test-section">
+             <h3>SG-Sentry Tests</h3>
+             <button class="btn" onclick="testSGSentryLogging()">Test SG-Sentry Logging</button>
+             <button class="btn" onclick="testSGSentryError()">Test SG-Sentry Error</button>
+             <button class="btn" onclick="testSGSentryWorkflow()">Test SG-Sentry Workflow</button>
+         </div>
+         
+         <div class="test-section">
+             <h3>All Log Levels</h3>
+             <button class="btn" onclick="testSGSentryTrace()">Test TRACE</button>
+             <button class="btn" onclick="testSGSentryDebug()">Test DEBUG</button>
+             <button class="btn" onclick="testSGSentryInfo()">Test INFO</button>
+             <button class="btn btn-warning" onclick="testSGSentryWarning()">Test WARNING</button>
+             <button class="btn btn-danger" onclick="testSGSentryError()">Test ERROR</button>
+             <button class="btn btn-danger" onclick="testSGSentryFatal()">Test FATAL</button>
+         </div>
+        
+        <div class="test-section">
+            <h3>Console Logs</h3>
+            <div id="logs" class="log"></div>
+            <button class="btn" onclick="clearLogs()">Clear Logs</button>
+        </div>
+    </div>
+
+    <!-- Load Sentry SDK -->
+    <script src="https://browser.sentry-cdn.com/7.88.0/bundle.min.js" 
+            integrity="sha384-97phG3Cb0Vm+2N88y9hJ7CExwrkO9B9FvxZ5Oq3hQGfFSK/BrojizIIReHJ1J8yS" 
+            crossorigin="anonymous"></script>
+    
+    <!-- Load SG-Sentry demo -->
+    <script src="demo.js"></script>
+    
+    <script>
+        let logs = [];
+        
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push(`[${timestamp}] ${type.toUpperCase()}: ${message}`);
+            updateLogDisplay();
+        }
+        
+        function updateLogDisplay() {
+            const logsDiv = document.getElementById('logs');
+            logsDiv.innerHTML = logs.join('<br>');
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+        
+        function clearLogs() {
+            logs = [];
+            updateLogDisplay();
+        }
+        
+        function updateStatus(message, type = 'warning') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+        
+        // Initialize Sentry
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.Sentry) {
+                window.Sentry.init({
+                    dsn: 'https://25edcde4c336c7086e5ae4f5e565a672@o4509749941305344.ingest.us.sentry.io/4509749948973056',
+                    environment: 'test',
+                    release: '1.0.0',
+                    debug: true,
+                    tracesSampleRate: 1.0,
+                    replaysSessionSampleRate: 1.0,
+                    replaysOnErrorSampleRate: 1.0
+                });
+                
+                updateStatus('Sentry SDK initialized successfully', 'success');
+                addLog('Sentry SDK initialized successfully');
+                
+                // Configure SG-Sentry
+                if (window.SGSentry) {
+                    window.SGSentry.configure({
+                        enabled: true,
+                        defaultLogLevel: 'info',
+                        enableWorkflowTracking: true,
+                        enablePerformanceTracking: true
+                    });
+                    addLog('SG-Sentry configured successfully');
+                }
+            } else {
+                updateStatus('Failed to load Sentry SDK', 'error');
+                addLog('Failed to load Sentry SDK', 'error');
+            }
+        });
+        
+        // Test functions
+        function testBasicMessage() {
+            if (window.Sentry) {
+                window.Sentry.captureMessage('Test message from integration test', 'info');
+                addLog('Basic message sent to Sentry');
+            } else {
+                addLog('Sentry not available', 'error');
+            }
+        }
+        
+        function testError() {
+            if (window.Sentry) {
+                window.Sentry.captureMessage('Test error message', 'error');
+                addLog('Error message sent to Sentry');
+            } else {
+                addLog('Sentry not available', 'error');
+            }
+        }
+        
+        function testException() {
+            if (window.Sentry) {
+                const error = new Error('Test exception from integration test');
+                window.Sentry.captureException(error);
+                addLog('Exception sent to Sentry');
+            } else {
+                addLog('Sentry not available', 'error');
+            }
+        }
+        
+        function testSGSentryLogging() {
+            if (window.SGSentry) {
+                window.SGSentry.logInfo('TestComponent', 'Test info message from SG-Sentry', { test: true });
+                addLog('SG-Sentry info message sent');
+            } else {
+                addLog('SG-Sentry not available', 'error');
+            }
+        }
+        
+        function testSGSentryError() {
+            if (window.SGSentry) {
+                const error = new Error('Test error from SG-Sentry');
+                window.SGSentry.captureError(error, { component: 'TestComponent' });
+                addLog('SG-Sentry error captured');
+            } else {
+                addLog('SG-Sentry not available', 'error');
+            }
+        }
+        
+                 function testSGSentryWorkflow() {
+             if (window.SGSentry) {
+                 const workflowId = `test-workflow-${Date.now()}`;
+                 window.SGSentry.startWorkflow(workflowId, 'Test Workflow', 'TestComponent', { test: true });
+                 addLog(`Started workflow: ${workflowId}`);
+                 
+                 setTimeout(() => {
+                     window.SGSentry.completeWorkflow(workflowId, 'TestComponent', true, { result: 'success' });
+                     addLog('Workflow completed successfully');
+                 }, 1000);
+             } else {
+                 addLog('SG-Sentry not available', 'error');
+             }
+         }
+         
+         // Individual log level test functions
+         function testSGSentryTrace() {
+             if (window.SGSentry) {
+                 window.SGSentry.logTrace('TestComponent', 'TRACE level message from integration test', { test: true, level: 'trace' });
+                 addLog('SG-Sentry TRACE message sent');
+             } else {
+                 addLog('SG-Sentry not available', 'error');
+             }
+         }
+         
+         function testSGSentryDebug() {
+             if (window.SGSentry) {
+                 window.SGSentry.logDebug('TestComponent', 'DEBUG level message from integration test', { test: true, level: 'debug' });
+                 addLog('SG-Sentry DEBUG message sent');
+             } else {
+                 addLog('SG-Sentry not available', 'error');
+             }
+         }
+         
+         function testSGSentryInfo() {
+             if (window.SGSentry) {
+                 window.SGSentry.logInfo('TestComponent', 'INFO level message from integration test', { test: true, level: 'info' });
+                 addLog('SG-Sentry INFO message sent');
+             } else {
+                 addLog('SG-Sentry not available', 'error');
+             }
+         }
+         
+         function testSGSentryWarning() {
+             if (window.SGSentry) {
+                 window.SGSentry.logWarning('TestComponent', 'WARNING level message from integration test', { test: true, level: 'warning' });
+                 addLog('SG-Sentry WARNING message sent');
+             } else {
+                 addLog('SG-Sentry not available', 'error');
+             }
+         }
+         
+         function testSGSentryFatal() {
+             if (window.SGSentry) {
+                 window.SGSentry.logFatal('TestComponent', 'FATAL level message from integration test', { test: true, level: 'fatal' });
+                 addLog('SG-Sentry FATAL message sent');
+             } else {
+                 addLog('SG-Sentry not available', 'error');
+             }
+         }
+        
+        // Override console methods to capture logs
+        const originalConsole = {
+            log: console.log,
+            info: console.info,
+            warn: console.warn,
+            error: console.error
+        };
+        
+        console.log = function(...args) {
+            originalConsole.log.apply(console, args);
+            addLog(args.join(' '), 'info');
+        };
+        
+        console.info = function(...args) {
+            originalConsole.info.apply(console, args);
+            addLog(args.join(' '), 'info');
+        };
+        
+        console.warn = function(...args) {
+            originalConsole.warn.apply(console, args);
+            addLog(args.join(' '), 'warning');
+        };
+        
+        console.error = function(...args) {
+            originalConsole.error.apply(console, args);
+            addLog(args.join(' '), 'error');
+        };
+    </script>
+</body>
+</html> 

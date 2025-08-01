@@ -4,16 +4,18 @@
 (function() {
     'use strict';
 
-    // Mock Sentry for demo purposes
-    if (typeof window !== 'undefined' && !window.Sentry) {
-        window.Sentry = {
-            captureException: function(error, context) {
-                console.error('[Sentry] Exception captured:', error, context);
-            },
-            captureMessage: function(message, options) {
-                console.log('[Sentry] Message captured:', message, options);
-            }
-        };
+    // Initialize Sentry SDK for demo if not already initialized
+    if (typeof window !== 'undefined' && window.Sentry && !window.Sentry.getCurrentHub().getClient()) {
+        window.Sentry.init({
+            dsn: 'https://25edcde4c336c7086e5ae4f5e565a672@o4509749941305344.ingest.us.sentry.io/4509749948973056',
+            environment: 'demo',
+            release: '1.0.0',
+            debug: true,
+            tracesSampleRate: 1.0,
+            replaysSessionSampleRate: 1.0,
+            replaysOnErrorSampleRate: 1.0
+        });
+        console.log('[Sentry] SDK initialized successfully');
     }
 
     // Simple implementation of the core classes for demo

@@ -214,14 +214,28 @@ export class SentryManager {
   captureError(error: Error | string, context?: Record<string, any>): void {
     if (!this.isEnabled()) return;
     
-    // In a real implementation, this would send to Sentry
+    // Send to real Sentry SDK
     if (typeof window !== 'undefined' && (window as any).Sentry) {
       const sentry = (window as any).Sentry;
-      if (error instanceof Error) {
-        sentry.captureException(error, { extra: context });
-      } else {
-        sentry.captureMessage(error, { level: 'error', extra: context });
+      try {
+        if (error instanceof Error) {
+          sentry.captureException(error, { 
+            extra: context,
+            tags: { source: 'sg-sentry-manager' }
+          });
+        } else {
+          sentry.captureMessage(error, { 
+            level: 'error', 
+            extra: context,
+            tags: { source: 'sg-sentry-manager' }
+          });
+        }
+        console.log('[SentryManager] Error sent to Sentry successfully');
+      } catch (sentryError) {
+        console.error('[SentryManager] Failed to send to Sentry:', sentryError);
       }
+    } else {
+      console.warn('[SentryManager] Sentry SDK not available');
     }
     
     console.error('[SentryManager] Error captured:', error, context);

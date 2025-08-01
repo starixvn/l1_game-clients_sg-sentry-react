@@ -114,7 +114,7 @@ export class SentryConfigStorage implements IConfigStorage {
   getComponentConfig(componentName: string): ComponentConfig | null {
     const configStr = this.storage.getItem(this.getComponentKey(componentName, 'config'));
     if (!configStr) return null;
-    
+
     try {
       return JSON.parse(configStr);
     } catch (error) {
@@ -134,7 +134,7 @@ export class SentryConfigStorage implements IConfigStorage {
   clear(): void {
     // Clear all Sentry-related items
     const keys: string[] = [];
-    
+
     if (this.storage instanceof LocalStorage && this.storage.getStorage() instanceof window.Storage) {
       const storage = this.storage.getStorage();
       for (let i = 0; i < storage.length; i++) {
@@ -144,7 +144,7 @@ export class SentryConfigStorage implements IConfigStorage {
         }
       }
     }
-    
+
     keys.forEach(key => this.storage.removeItem(key));
   }
 
@@ -154,13 +154,13 @@ export class SentryConfigStorage implements IConfigStorage {
       this.getComponentKey(componentName, 'enabled'),
       this.getComponentKey(componentName, 'config')
     ];
-    
+
     keys.forEach(key => this.storage.removeItem(key));
   }
 
   getAllComponentNames(): string[] {
     const components = new Set<string>();
-    
+
     if (this.storage instanceof LocalStorage && this.storage.getStorage() instanceof window.Storage) {
       const storage = this.storage.getStorage();
       for (let i = 0; i < storage.length; i++) {
@@ -173,7 +173,7 @@ export class SentryConfigStorage implements IConfigStorage {
         }
       }
     }
-    
+
     return Array.from(components);
   }
 } 

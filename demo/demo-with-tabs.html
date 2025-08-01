@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG-Sentry Demo with Game Integration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .tab-navigation {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+            background-color: #fff;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .tab-button {
+            padding: 15px 30px;
+            border: none;
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 0 0 10px 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success { background-color: #27ae60; }
+        .btn-warning { background-color: #f39c12; }
+        .btn-danger { background-color: #e74c3c; }
+
+        .logs-container {
+            height: 400px;
+            overflow-y: auto;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .game-demo {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            background-color: #e3f2fd;
+        }
+
+        .game-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .game-logs {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 SG-Sentry Demo with Game Integration</h1>
+            <p>Interactive demonstration of the SG-Sentry logging and error tracking library with comprehensive game demo</p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-button active" onclick="switchTab('basic')">🧪 Basic Demo</button>
+            <button class="tab-button" onclick="switchTab('game')">🎮 Game Demo</button>
+        </div>
+
+        <!-- Basic Demo Tab -->
+        <div id="basic-tab" class="tab-content active">
+            <div class="demo-grid">
+                <div class="panel">
+                    <h2>🎮 Controls</h2>
+                    <div style="margin-bottom: 20px;">
+                        <span>Counter: </span>
+                        <span id="counterValue">0</span>
+                        <button class="btn" onclick="incrementCounter()">Increment</button>
+                        <button class="btn" onclick="resetCounter()">Reset</button>
+                    </div>
+
+                    <h3>📝 Basic Logging</h3>
+                    <button class="btn" onclick="testBasicLogging()">Test Basic Logging</button>
+                    <button class="btn btn-warning" onclick="testErrorLogging()">Test Error Logging</button>
+                    <button class="btn btn-danger" onclick="testErrorCapture()">Test Error Capture</button>
+
+                    <h3>🔍 All Log Levels</h3>
+                    <button class="btn" onclick="testTraceLogging()">Test TRACE</button>
+                    <button class="btn" onclick="testDebugLogging()">Test DEBUG</button>
+                    <button class="btn" onclick="testInfoLogging()">Test INFO</button>
+                    <button class="btn btn-warning" onclick="testWarningLogging()">Test WARNING</button>
+                    <button class="btn btn-danger" onclick="testErrorLogging()">Test ERROR</button>
+                    <button class="btn btn-danger" onclick="testFatalLogging()">Test FATAL</button>
+
+                    <h3>🧪 Test All Cases</h3>
+                    <button class="btn btn-warning" onclick="testAllCases()">Test All Cases</button>
+                </div>
+
+                <div class="panel">
+                    <h2>📋 Activity Logs</h2>
+                    <div class="logs-container" id="logsContainer">
+                        <div>Welcome to SG-Sentry Demo!</div>
+                        <div>Open your browser console to see detailed logs.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Demo Tab -->
+        <div id="game-tab" class="tab-content">
+            <div class="game-demo">
+                <h2>🎮 Game Demo with Sentry Integration</h2>
+                <p style="margin-bottom: 20px; color: #666;">
+                    This game demo showcases comprehensive Sentry logging integration with multiple log levels,
+                    workflow tracking, and performance monitoring based on the configs.LOCAL_1.json pattern.
+                </p>
+
+                <!-- Game Stats -->
+                <div class="game-stats">
+                    <div class="stat-card">
+                        <div style="font-weight: bold; color: #1976d2;">Health</div>
+                        <div id="gameHealth" style="font-size: 1.2em; color: #4caf50;">100</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="font-weight: bold; color: #388e3c;">Score</div>
+                        <div id="gameScore" style="font-size: 1.2em;">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="font-weight: bold; color: #f57c00;">Level</div>
+                        <div id="gameLevel" style="font-size: 1.2em;">1</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="font-weight: bold; color: #c2185b;">Status</div>
+                        <div id="gameStatus" style="font-size: 1.2em; text-transform: capitalize;">idle</div>
+                    </div>
+                </div>
+
+                <!-- Game Controls -->
+                <div class="game-controls">
+                    <button id="startGameBtn" class="btn btn-success" onclick="startGame()">Start Game</button>
+                    <button id="pauseGameBtn" class="btn btn-warning" onclick="pauseGame()" style="display: none;">Pause Game</button>
+                    <button id="resumeGameBtn" class="btn" onclick="resumeGame()" style="display: none;">Resume Game</button>
+                    <button id="endGameBtn" class="btn btn-danger" onclick="endGame()" style="display: none;">End Game</button>
+                </div>
+
+                <!-- Sentry Testing Controls -->
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #34495e; margin-bottom: 10px;">🧪 Sentry Testing</h3>
+                    <button class="btn btn-danger" onclick="simulateGameError()">Simulate Error</button>
+                    <button class="btn" style="background-color: #9c27b0;" onclick="simulateGameFatal()">Simulate Fatal</button>
+                    <button class="btn" style="background-color: #607d8b;" onclick="toggleGameLogs()">Show/Hide Logs</button>
+                    <button class="btn" style="background-color: #795548;" onclick="clearGameLogs()">Clear Logs</button>
+                </div>
+
+                <!-- Game Logs -->
+                <div id="gameLogs" class="game-logs" style="display: none;">
+                    <div style="margin-bottom: 10px; font-weight: bold;">Game Logs:</div>
+                    <div id="gameLogsContent">
+                        <div style="color: #a0aec0;">No logs yet...</div>
+                    </div>
+                </div>
+
+                <!-- Last Action Display -->
+                <div style="margin-top: 15px; padding: 10px; background-color: #f1f3f4; border-radius: 5px; font-size: 14px;">
+                    <strong>Last Action:</strong> <span id="lastAction">Game initialized</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Sentry SDK -->
+    <script src="https://browser.sentry-cdn.com/7.88.0/bundle.min.js" 
+            integrity="sha384-97phG3Cb0Vm+2N88y9hJ7CExwrkO9B9FvxZ5Oq3hQGfFSK/BrojizIIReHJ1J8yS" 
+            crossorigin="anonymous"></script>
+    
+    <!-- Load the SG-Sentry demo -->
+    <script src="demo.js"></script>
+    
+    <script>
+        // Demo state
+        let counter = 0;
+
+        // Game state
+        let gameState = {
+            playerHealth: 100,
+            playerScore: 0,
+            gameLevel: 1,
+            enemiesDefeated: 0,
+            itemsCollected: 0,
+            gameStatus: 'idle',
+            lastAction: 'Game initialized'
+        };
+
+        let gameInterval = null;
+        let gameLogs = [];
+        let showGameLogs = false;
+
+        // Initialize the demo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Sentry SDK if not already initialized
+            if (window.Sentry && !window.Sentry.getCurrentHub().getClient()) {
+                window.Sentry.init({
+                    dsn: 'https://25edcde4c336c7086e5ae4f5e565a672@o4509749941305344.ingest.us.sentry.io/4509749948973056',
+                    environment: 'demo',
+                    release: '1.0.0',
+                    debug: true,
+                    tracesSampleRate: 1.0,
+                    replaysSessionSampleRate: 1.0,
+                    replaysOnErrorSampleRate: 1.0
+                });
+                console.log('[Demo] Sentry SDK initialized successfully');
+            }
+            
+            // Configure SG-Sentry
+            window.SGSentry.configure({
+                enabled: true,
+                defaultLogLevel: 'info',
+                enableWorkflowTracking: true,
+                enablePerformanceTracking: true
+            });
+
+            addLog('Demo initialized successfully with Sentry integration', 'info');
+            addGameLog('Game demo initialized successfully', 'info');
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Utility functions
+        function addLog(message, type = 'info') {
+            const container = document.getElementById('logsContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
+            container.appendChild(logEntry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addGameLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
+            gameLogs.push(logEntry);
+            
+            if (gameLogs.length > 50) {
+                gameLogs = gameLogs.slice(-50);
+            }
+
+            if (showGameLogs) {
+                updateGameLogsDisplay();
+            }
+        }
+
+        function updateGameLogsDisplay() {
+            const container = document.getElementById('gameLogsContent');
+            if (gameLogs.length === 0) {
+                container.innerHTML = '<div style="color: #a0aec0;">No logs yet...</div>';
+            } else {
+                container.innerHTML = gameLogs.map(log => `<div style="margin-bottom: 2px;">${log}</div>`).join('');
+            }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateGameState(updates, action) {
+            const oldState = { ...gameState };
+            gameState = { ...gameState, ...updates, lastAction: action };
+            
+            // Update UI
+            document.getElementById('gameHealth').textContent = gameState.playerHealth;
+            document.getElementById('gameHealth').style.color = gameState.playerHealth < 30 ? '#f44336' : '#4caf50';
+            document.getElementById('gameScore').textContent = gameState.playerScore;
+            document.getElementById('gameLevel').textContent = gameState.gameLevel;
+            document.getElementById('gameStatus').textContent = gameState.gameStatus;
+            document.getElementById('lastAction').textContent = gameState.lastAction;
+
+            // Log state changes
+            switch (action) {
+                case 'player_damage':
+                    window.SGSentry.logWarning('Player took damage', {
+                        gameId: 'demo-game-001',
+                        sessionId: 'demo-session',
+                        oldHealth: oldState.playerHealth,
+                        newHealth: gameState.playerHealth,
+                        damage: oldState.playerHealth - gameState.playerHealth,
+                        action
+                    });
+                    addGameLog(`Player took damage! Health: ${oldState.playerHealth} → ${gameState.playerHealth}`, 'warning');
+                    break;
+
+                case 'player_heal':
+                    window.SGSentry.logInfo('Player healed', {
+                        gameId: 'demo-game-001',
+                        sessionId: 'demo-session',
+                        oldHealth: oldState.playerHealth,
+                        newHealth: gameState.playerHealth,
+                        healAmount: gameState.playerHealth - oldState.playerHealth,
+                        action
+                    });
+                    addGameLog(`Player healed! Health: ${oldState.playerHealth} → ${gameState.playerHealth}`, 'info');
+                    break;
+
+                case 'enemy_defeated':
+                    window.SGSentry.logInfo('Enemy defeated', {
+                        gameId: 'demo-game-001',
+                        sessionId: 'demo-session',
+                        enemiesDefeated: gameState.enemiesDefeated,
+                        scoreGained: gameState.playerScore - oldState.playerScore,
+                        action
+                    });
+                    addGameLog(`Enemy defeated! Score: ${oldState.playerScore} → ${gameState.playerScore}`, 'info');
+                    break;
+
+                case 'item_collected':
+                    window.SGSentry.logDebug('Item collected', {
+                        gameId: 'demo-game-001',
+                        sessionId: 'demo-session',
+                        itemsCollected: gameState.itemsCollected,
+                        action
+                    });
+                    addGameLog(`Item collected! Total: ${gameState.itemsCollected}`, 'debug');
+                    break;
+
+                case 'level_up':
+                    window.SGSentry.logInfo('Level up achieved', {
+                        gameId: 'demo-game-001',
+                        sessionId: 'demo-session',
+                        oldLevel: oldState.gameLevel,
+                        newLevel: gameState.gameLevel,
+                        action
+                    });
+                    addGameLog(`Level up! Level: ${oldState.gameLevel} → ${gameState.gameLevel}`, 'info');
+                    break;
+
+                case 'game_over':
+                    window.SGSentry.logError('Game over', {
+                        gameId: 'demo-game-001',
+                        sessionId: 'demo-session',
+                        finalScore: gameState.playerScore,
+                        finalLevel: gameState.gameLevel,
+                        enemiesDefeated: gameState.enemiesDefeated,
+                        itemsCollected: gameState.itemsCollected,
+                        action
+                    });
+                    addGameLog('Game Over!', 'error');
+                    break;
+
+                case 'victory':
+                    window.SGSentry.logInfo('Victory achieved', {
+                        gameId: 'demo-game-001',
+                        sessionId: 'demo-session',
+                        finalScore: gameState.playerScore,
+                        finalLevel: gameState.gameLevel,
+                        enemiesDefeated: gameState.enemiesDefeated,
+                        itemsCollected: gameState.itemsCollected,
+                        action
+                    });
+                    addGameLog('Victory!', 'info');
+                    break;
+            }
+        }
+
+        // Game functions
+        function startGame() {
+            const workflowId = window.SGSentry.startWorkflow('game_session_start', {
+                gameId: 'demo-game-001',
+                sessionId: 'demo-session',
+                action: 'start_game'
+            });
+
+            window.SGSentry.logInfo('Game session started', {
+                gameId: 'demo-game-001',
+                sessionId: 'demo-session',
+                workflowId,
+                action: 'start_game'
+            });
+
+            updateGameState({
+                gameStatus: 'playing',
+                playerHealth: 100,
+                playerScore: 0,
+                gameLevel: 1,
+                enemiesDefeated: 0,
+                itemsCollected: 0
+            }, 'game_started');
+
+            addGameLog('Game started!', 'info');
+
+            // Update UI
+            document.getElementById('startGameBtn').style.display = 'none';
+            document.getElementById('pauseGameBtn').style.display = 'inline-block';
+            document.getElementById('endGameBtn').style.display = 'inline-block';
+
+            // Start game loop
+            gameInterval = setInterval(() => {
+                if (gameState.gameStatus !== 'playing') return;
+
+                const random = Math.random();
+                let newState = { ...gameState };
+
+                if (random < 0.1) {
+                    // Player takes damage
+                    newState.playerHealth = Math.max(0, newState.playerHealth - Math.floor(Math.random() * 20) + 5);
+                    updateGameState(newState, 'player_damage');
+                    
+                    if (newState.playerHealth <= 0) {
+                        newState.gameStatus = 'gameOver';
+                        updateGameState(newState, 'game_over');
+                        window.SGSentry.completeWorkflow(workflowId, 'failed', { reason: 'player_health_zero' });
+                        endGame();
+                    }
+                } else if (random < 0.2) {
+                    // Player heals
+                    newState.playerHealth = Math.min(100, newState.playerHealth + Math.floor(Math.random() * 15) + 5);
+                    updateGameState(newState, 'player_heal');
+                } else if (random < 0.3) {
+                    // Enemy defeated
+                    newState.enemiesDefeated++;
+                    newState.playerScore += Math.floor(Math.random() * 50) + 10;
+                    updateGameState(newState, 'enemy_defeated');
+                } else if (random < 0.4) {
+                    // Item collected
+                    newState.itemsCollected++;
+                    newState.playerScore += Math.floor(Math.random() * 20) + 5;
+                    updateGameState(newState, 'item_collected');
+                } else if (random < 0.45 && newState.playerScore >= newState.gameLevel * 100) {
+                    // Level up
+                    newState.gameLevel++;
+                    updateGameState(newState, 'level_up');
+                    
+                    if (newState.gameLevel >= 5) {
+                        newState.gameStatus = 'victory';
+                        updateGameState(newState, 'victory');
+                        window.SGSentry.completeWorkflow(workflowId, 'success', { finalLevel: newState.gameLevel });
+                        endGame();
+                    }
+                }
+            }, 2000);
+
+            window.SGSentry.trackPerformance('game_loop_start', { gameId: 'demo-game-001', sessionId: 'demo-session' });
+        }
+
+        function pauseGame() {
+            window.SGSentry.logInfo('Game paused', {
+                gameId: 'demo-game-001',
+                sessionId: 'demo-session',
+                currentScore: gameState.playerScore,
+                currentLevel: gameState.gameLevel,
+                action: 'pause_game'
+            });
+
+            updateGameState({ gameStatus: 'paused' }, 'game_paused');
+            addGameLog('Game paused', 'info');
+
+            document.getElementById('pauseGameBtn').style.display = 'none';
+            document.getElementById('resumeGameBtn').style.display = 'inline-block';
+
+            if (gameInterval) {
+                clearInterval(gameInterval);
+                gameInterval = null;
+            }
+        }
+
+        function resumeGame() {
+            window.SGSentry.logInfo('Game resumed', {
+                gameId: 'demo-game-001',
+                sessionId: 'demo-session',
+                currentScore: gameState.playerScore,
+                currentLevel: gameState.gameLevel,
+                action: 'resume_game'
+            });
+
+            updateGameState({ gameStatus: 'playing' }, 'game_resumed');
+            addGameLog('Game resumed', 'info');
+
+            document.getElementById('resumeGameBtn').style.display = 'none';
+            document.getElementById('pauseGameBtn').style.display = 'inline-block';
+
+            if (!gameInterval) {
+                startGame();
+            }
+        }
+
+        function endGame() {
+            window.SGSentry.logInfo('Game ended manually', {
+                gameId: 'demo-game-001',
+                sessionId: 'demo-session',
+                finalScore: gameState.playerScore,
+                finalLevel: gameState.gameLevel,
+                enemiesDefeated: gameState.enemiesDefeated,
+                itemsCollected: gameState.itemsCollected,
+                action: 'end_game'
+            });
+
+            updateGameState({ gameStatus: 'idle' }, 'game_ended_manually');
+            addGameLog('Game ended manually', 'info');
+
+            document.getElementById('startGameBtn').style.display = 'inline-block';
+            document.getElementById('pauseGameBtn').style.display = 'none';
+            document.getElementById('resumeGameBtn').style.display = 'none';
+            document.getElementById('endGameBtn').style.display = 'none';
+
+            if (gameInterval) {
+                clearInterval(gameInterval);
+                gameInterval = null;
+            }
+        }
+
+        function simulateGameError() {
+            window.SGSentry.logError('Simulated game error', {
+                gameId: 'demo-game-001',
+                sessionId: 'demo-session',
+                errorType: 'simulated_error',
+                currentState: gameState,
+                action: 'simulate_error'
+            });
+
+            addGameLog('Simulated error logged', 'error');
+        }
+
+        function simulateGameFatal() {
+            window.SGSentry.logFatal('Simulated fatal game error', {
+                gameId: 'demo-game-001',
+                sessionId: 'demo-session',
+                errorType: 'simulated_fatal_error',
+                currentState: gameState,
+                action: 'simulate_fatal_error'
+            });
+
+            addGameLog('Simulated fatal error logged', 'fatal');
+        }
+
+        function toggleGameLogs() {
+            showGameLogs = !showGameLogs;
+            const logsContainer = document.getElementById('gameLogs');
+            logsContainer.style.display = showGameLogs ? 'block' : 'none';
+            
+            if (showGameLogs) {
+                updateGameLogsDisplay();
+            }
+        }
+
+        function clearGameLogs() {
+            window.SGSentry.logDebug('Game logs cleared manually', {
+                gameId: 'demo-game-001',
+                sessionId: 'demo-session',
+                action: 'clear_logs'
+            });
+
+            gameLogs = [];
+            addGameLog('Logs cleared', 'debug');
+            updateGameLogsDisplay();
+        }
+
+        // Basic demo functions (from demo.js)
+        function incrementCounter() {
+            counter++;
+            document.getElementById('counterValue').textContent = counter;
+            window.SGSentry.logInfo('Counter incremented', { counter });
+            addLog('Counter incremented', 'info');
+        }
+
+        function resetCounter() {
+            counter = 0;
+            document.getElementById('counterValue').textContent = counter;
+            window.SGSentry.logInfo('Counter reset', { counter });
+            addLog('Counter reset', 'info');
+        }
+
+        function testBasicLogging() {
+            window.SGSentry.logTrace('Trace message from demo', { counter });
+            window.SGSentry.logDebug('Debug message from demo', { counter });
+            window.SGSentry.logInfo('Info message from demo', { counter });
+            window.SGSentry.logWarning('Warning message from demo', { counter });
+            addLog('Basic logging test completed', 'info');
+        }
+
+        function testTraceLogging() {
+            window.SGSentry.logTrace('TRACE level message from demo', { counter, level: 'trace' });
+            addLog('TRACE logging test completed', 'info');
+        }
+
+        function testDebugLogging() {
+            window.SGSentry.logDebug('DEBUG level message from demo', { counter, level: 'debug' });
+            addLog('DEBUG logging test completed', 'info');
+        }
+
+        function testInfoLogging() {
+            window.SGSentry.logInfo('INFO level message from demo', { counter, level: 'info' });
+            addLog('INFO logging test completed', 'info');
+        }
+
+        function testWarningLogging() {
+            window.SGSentry.logWarning('WARNING level message from demo', { counter, level: 'warning' });
+            addLog('WARNING logging test completed', 'warning');
+        }
+
+        function testErrorLogging() {
+            window.SGSentry.logError('ERROR level message from demo', { counter, level: 'error' });
+            addLog('ERROR logging test completed', 'error');
+        }
+
+        function testFatalLogging() {
+            window.SGSentry.logFatal('FATAL level message from demo', { counter, level: 'fatal' });
+            addLog('FATAL logging test completed', 'error');
+        }
+
+        function testErrorCapture() {
+            try {
+                throw new Error('Captured error test');
+            } catch (error) {
+                window.SGSentry.captureError(error, { component: 'DemoComponent', counter, context: 'error-capture-test' });
+                addLog('Error capture test completed', 'error');
+            }
+        }
+
+        function testAllCases() {
+            addLog('Starting comprehensive test of all cases...', 'info');
+            
+            testTraceLogging();
+            setTimeout(() => testDebugLogging(), 300);
+            setTimeout(() => testInfoLogging(), 600);
+            setTimeout(() => testWarningLogging(), 900);
+            setTimeout(() => testErrorLogging(), 1200);
+            setTimeout(() => testFatalLogging(), 1500);
+            setTimeout(() => testErrorCapture(), 1800);
+            setTimeout(() => testBasicLogging(), 2100);
+            
+            setTimeout(() => {
+                addLog('All test cases completed! Check Sentry dashboard for messages.', 'info');
+            }, 2400);
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG-Sentry Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            margin: 5px;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>SG-Sentry Test Page</h1>
+    
+    <div class="test-section">
+        <h2>SG-Sentry Availability Test</h2>
+        <div id="availability-status">Checking...</div>
+        <button onclick="checkAvailability()">Check Again</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Basic Logging Test</h2>
+        <button onclick="testBasicLogging()">Test Basic Logging</button>
+        <button onclick="testErrorLogging()">Test Error Logging</button>
+        <button onclick="testWorkflow()">Test Workflow</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Logs</h2>
+        <div id="logs" class="log"></div>
+        <button onclick="clearLogs()">Clear Logs</button>
+    </div>
+
+    <!-- Load Sentry SDK -->
+    <script src="https://browser.sentry-cdn.com/7.88.0/bundle.min.js" 
+            integrity="sha384-97phG3Cb0Vm+2N88y9hJ7CExwrkO9B9FvxZ5Oq3hQGfFSK/BrojizIIReHJ1J8yS" 
+            crossorigin="anonymous"></script>
+    
+    <!-- Load the SG-Sentry demo library -->
+    <script src="demo.js"></script>
+    
+    <script>
+        function addLog(message) {
+            const logsDiv = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logsDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        function checkAvailability() {
+            const statusDiv = document.getElementById('availability-status');
+            
+            if (window.SGSentry) {
+                statusDiv.innerHTML = '<span style="color: green;">✅ SG-Sentry is available!</span>';
+                addLog('SG-Sentry is available and ready to use');
+                
+                // Test configuration
+                window.SGSentry.configure({
+                    enabled: true,
+                    defaultLogLevel: 'debug',
+                    enableWorkflowTracking: true,
+                    enablePerformanceTracking: true
+                });
+                addLog('SG-Sentry configured successfully');
+            } else {
+                statusDiv.innerHTML = '<span style="color: red;">❌ SG-Sentry is NOT available!</span>';
+                addLog('ERROR: SG-Sentry is not available');
+            }
+        }
+
+        function testBasicLogging() {
+            if (!window.SGSentry) {
+                addLog('ERROR: SG-Sentry not available for testing');
+                return;
+            }
+
+            addLog('Testing basic logging...');
+            
+            window.SGSentry.logTrace('TestComponent', 'This is a TRACE message', { test: true });
+            window.SGSentry.logDebug('TestComponent', 'This is a DEBUG message', { test: true });
+            window.SGSentry.logInfo('TestComponent', 'This is an INFO message', { test: true });
+            window.SGSentry.logWarning('TestComponent', 'This is a WARNING message', { test: true });
+            window.SGSentry.logError('TestComponent', 'This is an ERROR message', { test: true });
+            window.SGSentry.logFatal('TestComponent', 'This is a FATAL message', { test: true });
+            
+            addLog('Basic logging test completed - check browser console for details');
+        }
+
+        function testErrorLogging() {
+            if (!window.SGSentry) {
+                addLog('ERROR: SG-Sentry not available for testing');
+                return;
+            }
+
+            addLog('Testing error logging...');
+            
+            try {
+                throw new Error('This is a test error for Sentry');
+            } catch (error) {
+                window.SGSentry.logError('TestComponent', error, { test: true, context: 'error-test' });
+                addLog('Error logged successfully');
+            }
+        }
+
+        function testWorkflow() {
+            if (!window.SGSentry) {
+                addLog('ERROR: SG-Sentry not available for testing');
+                return;
+            }
+
+            addLog('Testing workflow tracking...');
+            
+            const workflowId = 'test-workflow-' + Date.now();
+            window.SGSentry.startWorkflow(workflowId, 'Test Workflow', 'TestComponent', { test: true });
+            addLog('Workflow started');
+            
+            setTimeout(() => {
+                window.SGSentry.completeWorkflow(workflowId, 'TestComponent', true, { result: 'success' });
+                addLog('Workflow completed');
+            }, 1000);
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        // Check availability on page load
+        window.addEventListener('load', () => {
+            setTimeout(checkAvailability, 100); // Small delay to ensure scripts are loaded
+        });
+    </script>
+</body>
+</html> 

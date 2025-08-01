@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG-Sentry React Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        #root {
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <!-- Load Sentry SDK -->
+    <script src="https://browser.sentry-cdn.com/7.88.0/bundle.min.js" 
+            integrity="sha384-97phG3Cb0Vm+2N88y9hJ7CExwrkO9B9FvxZ5Oq3hQGfFSK/BrojizIIReHJ1J8yS" 
+            crossorigin="anonymous"></script>
+    
+    <!-- Load React and ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Load Babel for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Load the SG-Sentry demo library -->
+    <script src="demo.js"></script>
+    
+    <!-- Load the Game Demo component -->
+    <script type="text/babel" src="game-demo.jsx"></script>
+    
+    <!-- Load the Game Board Demo component -->
+    <script type="text/babel" src="game-board-demo.jsx"></script>
+    
+    <!-- Load the React demo -->
+    <script type="text/babel" src="demo.jsx"></script>
+</body>
+</html> 

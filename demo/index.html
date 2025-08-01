@@ -288,6 +288,16 @@
                     <button class="btn btn-danger" onclick="testErrorCapture()">Test Error Capture</button>
                 </div>
 
+                <h3>🔍 All Log Levels</h3>
+                <div class="button-group">
+                    <button class="btn" onclick="testTraceLogging()">Test TRACE</button>
+                    <button class="btn" onclick="testDebugLogging()">Test DEBUG</button>
+                    <button class="btn" onclick="testInfoLogging()">Test INFO</button>
+                    <button class="btn btn-warning" onclick="testWarningLogging()">Test WARNING</button>
+                    <button class="btn btn-danger" onclick="testErrorLogging()">Test ERROR</button>
+                    <button class="btn btn-danger" onclick="testFatalLogging()">Test FATAL</button>
+                </div>
+
                 <h3>🔄 Workflow Tracking</h3>
                 <div class="button-group">
                     <button class="btn" onclick="testWorkflowTracking()">Test Workflow</button>
@@ -305,6 +315,11 @@
                     <button class="btn btn-success" onclick="enableSentry()">Enable Sentry</button>
                     <button class="btn btn-danger" onclick="disableSentry()">Disable Sentry</button>
                     <button class="btn" onclick="clearLogs()">Clear Logs</button>
+                </div>
+
+                <h3>🧪 Test All Cases</h3>
+                <div class="button-group">
+                    <button class="btn btn-warning" onclick="testAllCases()">Test All Cases</button>
                 </div>
             </div>
 
@@ -332,6 +347,11 @@
         </div>
     </div>
 
+    <!-- Load Sentry SDK -->
+    <script src="https://browser.sentry-cdn.com/7.88.0/bundle.min.js" 
+            integrity="sha384-97phG3Cb0Vm+2N88y9hJ7CExwrkO9B9FvxZ5Oq3hQGfFSK/BrojizIIReHJ1J8yS" 
+            crossorigin="anonymous"></script>
+    
     <!-- Load the SG-Sentry demo -->
     <script src="demo.js"></script>
     
@@ -342,6 +362,20 @@
 
         // Initialize the demo
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Sentry SDK if not already initialized
+            if (window.Sentry && !window.Sentry.getCurrentHub().getClient()) {
+                window.Sentry.init({
+                    dsn: 'https://25edcde4c336c7086e5ae4f5e565a672@o4509749941305344.ingest.us.sentry.io/4509749948973056',
+                    environment: 'demo',
+                    release: '1.0.0',
+                    debug: true,
+                    tracesSampleRate: 1.0,
+                    replaysSessionSampleRate: 1.0,
+                    replaysOnErrorSampleRate: 1.0
+                });
+                console.log('[Demo] Sentry SDK initialized successfully');
+            }
+            
             // Configure SG-Sentry
             window.SGSentry.configure({
                 enabled: true,
@@ -351,7 +385,7 @@
             });
 
             updateStatus();
-            addLog('Demo initialized successfully', 'info');
+            addLog('Demo initialized successfully with Sentry integration', 'info');
         });
 
         // Utility functions
@@ -422,6 +456,37 @@
             window.SGSentry.logWarning('DemoComponent', 'Warning message from demo', context);
             
             addLog('Basic logging test completed', 'success');
+        }
+
+        // Individual log level test functions
+        function testTraceLogging() {
+            const context = { counter, timestamp: Date.now(), level: 'trace' };
+            window.SGSentry.logTrace('DemoComponent', 'TRACE level message from demo', context);
+            addLog('TRACE logging test completed', 'success');
+        }
+
+        function testDebugLogging() {
+            const context = { counter, timestamp: Date.now(), level: 'debug' };
+            window.SGSentry.logDebug('DemoComponent', 'DEBUG level message from demo', context);
+            addLog('DEBUG logging test completed', 'success');
+        }
+
+        function testInfoLogging() {
+            const context = { counter, timestamp: Date.now(), level: 'info' };
+            window.SGSentry.logInfo('DemoComponent', 'INFO level message from demo', context);
+            addLog('INFO logging test completed', 'success');
+        }
+
+        function testWarningLogging() {
+            const context = { counter, timestamp: Date.now(), level: 'warning' };
+            window.SGSentry.logWarning('DemoComponent', 'WARNING level message from demo', context);
+            addLog('WARNING logging test completed', 'success');
+        }
+
+        function testFatalLogging() {
+            const context = { counter, timestamp: Date.now(), level: 'fatal' };
+            window.SGSentry.logFatal('DemoComponent', 'FATAL level message from demo', context);
+            addLog('FATAL logging test completed', 'success');
         }
 
         function testErrorLogging() {
@@ -535,6 +600,50 @@
                 failedPerfBtn.textContent = 'Test Failed Performance';
                 failedPerfBtn.disabled = false;
             }
+        }
+
+        // Test all cases function
+        async function testAllCases() {
+            addLog('Starting comprehensive test of all cases...', 'info');
+            
+            // Test all log levels
+            testTraceLogging();
+            await new Promise(resolve => setTimeout(resolve, 300));
+            testDebugLogging();
+            await new Promise(resolve => setTimeout(resolve, 300));
+            testInfoLogging();
+            await new Promise(resolve => setTimeout(resolve, 300));
+            testWarningLogging();
+            await new Promise(resolve => setTimeout(resolve, 300));
+            testErrorLogging();
+            await new Promise(resolve => setTimeout(resolve, 300));
+            testFatalLogging();
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            // Test basic logging
+            testBasicLogging();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Test error capture
+            testErrorCapture();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Test workflow tracking
+            testWorkflowTracking();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Test workflow with steps
+            testWorkflowWithSteps();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Test performance tracking
+            testPerformanceTracking();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Test failed performance
+            testFailedPerformance();
+            
+            addLog('All test cases completed! Check Sentry dashboard for messages.', 'success');
         }
     </script>
 </body>

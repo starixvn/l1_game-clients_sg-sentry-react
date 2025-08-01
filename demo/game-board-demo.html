@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Board Demo - SG-Sentry</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f5f5f5;
+        }
+        #root {
+            min-height: 100vh;
+        }
+        .demo-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .demo-header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .demo-header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>🎮 Game Board Demo</h1>
+        <p>Interactive Game Board with Sentry Logging Integration</p>
+    </div>
+    
+    <div id="root"></div>
+    
+    <!-- Load Sentry SDK -->
+    <script src="https://browser.sentry-cdn.com/7.88.0/bundle.min.js" 
+            integrity="sha384-97phG3Cb0Vm+2N88y9hJ7CExwrkO9B9FvxZ5Oq3hQGfFSK/BrojizIIReHJ1J8yS" 
+            crossorigin="anonymous"></script>
+    
+    <!-- Load React and ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Load Babel for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Load the SG-Sentry demo library -->
+    <script src="demo.js"></script>
+    
+    <!-- Load the Game Board Demo component -->
+    <script type="text/babel" src="game-board-demo.jsx"></script>
+    
+    <script type="text/babel">
+        // Initialize Sentry SDK for the demo if not already initialized
+        if (typeof window !== 'undefined' && window.Sentry && !window.Sentry.getCurrentHub().getClient()) {
+            window.Sentry.init({
+                dsn: 'https://25edcde4c336c7086e5ae4f5e565a672@o4509749941305344.ingest.us.sentry.io/4509749948973056',
+                environment: 'demo',
+                release: '1.0.0',
+                debug: true,
+                tracesSampleRate: 1.0,
+                replaysSessionSampleRate: 1.0,
+                replaysOnErrorSampleRate: 1.0
+            });
+            console.log('[Game Board Demo] Sentry SDK initialized successfully');
+        }
+
+        // Configure Sentry for the demo
+        if (window.SGSentry) {
+            window.SGSentry.configure({
+                enabled: true,
+                defaultLogLevel: 'debug',
+                enableWorkflowTracking: true,
+                enablePerformanceTracking: true,
+                enableConsoleOverride: false
+            });
+            console.log('[Game Board Demo] SG-Sentry configured successfully');
+        } else {
+            console.error('[Game Board Demo] SG-Sentry not available! Make sure demo.js is loaded.');
+        }
+
+        // Render the Game Board Demo
+        const container = document.getElementById('root');
+        if (container) {
+            const root = ReactDOM.createRoot(container);
+            root.render(React.createElement(window.GameBoardDemo, {
+                gameId: 'demo-game-board-001',
+                sessionId: `session-${Date.now()}`,
+                onGameEnd: () => {
+                    console.log('[Game Board Demo] Game board demo ended');
+                    if (window.SGSentry) {
+                        window.SGSentry.logInfo('GameBoardDemo', 'Game board demo session ended', { 
+                            gameId: 'demo-game-board-001',
+                            timestamp: Date.now() 
+                        });
+                    }
+                }
+            }));
+        } else {
+            console.error('Root element not found');
+        }
+    </script>
+</body>
+</html> 

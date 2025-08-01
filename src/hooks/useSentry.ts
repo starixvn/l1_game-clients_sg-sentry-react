@@ -7,12 +7,12 @@ import { UseSentryHelperOptions, SentryLogLevel, WorkflowState } from '../types'
  * Provides logging, workflow tracking, and performance monitoring
  */
 export function useSentry(options: UseSentryHelperOptions) {
-  const { 
-    componentName, 
-    logLevel, 
-    enableWorkflowTracking = true, 
+  const {
+    componentName,
+    logLevel,
+    enableWorkflowTracking = true,
     enablePerformanceTracking = true,
-    enableConsoleOverride = false 
+    enableConsoleOverride = false
   } = options;
 
   const manager = useMemo(() => SentryManager.getInstance(), []);
@@ -68,7 +68,7 @@ export function useSentry(options: UseSentryHelperOptions) {
 
   // Performance tracking
   const trackPerformance = useCallback(async <T>(
-    operationName: string, 
+    operationName: string,
     operation: () => Promise<T> | T
   ): Promise<T> => {
     return manager.trackPerformance(componentName, operationName, operation);
@@ -95,20 +95,20 @@ export function useSentry(options: UseSentryHelperOptions) {
     logWarning,
     logError,
     logFatal,
-    
+
     // Workflow tracking
     startWorkflow,
     updateWorkflow,
     completeWorkflow,
-    
+
     // Performance tracking
     trackPerformance,
-    
+
     // Utilities
     captureError,
     setLogLevel,
     isEnabled,
-    
+
     // Component info
     componentName
   };

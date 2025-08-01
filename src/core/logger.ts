@@ -32,22 +32,29 @@ export class SentryLogger implements ILogger {
   }
 
   private logToSentry(level: string, message: string, context?: Record<string, any>): void {
-    // In a real implementation, this would send to Sentry
+    // Send to real Sentry SDK
     if (typeof window !== 'undefined' && (window as any).Sentry) {
       const sentry = (window as any).Sentry;
       
-      if (level === 'error' || level === 'fatal') {
-        sentry.captureException(new Error(message), {
-          tags: { component: this.componentName, level },
-          extra: context
-        });
-      } else {
-        sentry.captureMessage(message, {
-          level: level as any,
-          tags: { component: this.componentName },
-          extra: context
-        });
+      try {
+        if (level === 'error' || level === 'fatal') {
+          sentry.captureException(new Error(message), {
+            tags: { component: this.componentName, level, source: 'sg-sentry-logger' },
+            extra: context
+          });
+        } else {
+          sentry.captureMessage(message, {
+            level: level as any,
+            tags: { component: this.componentName, source: 'sg-sentry-logger' },
+            extra: context
+          });
+        }
+        console.log(`[SentryLogger] ${level.toUpperCase()} message sent to Sentry successfully`);
+      } catch (sentryError) {
+        console.error('[SentryLogger] Failed to send to Sentry:', sentryError);
       }
+    } else {
+      console.warn('[SentryLogger] Sentry SDK not available');
     }
   }
 
