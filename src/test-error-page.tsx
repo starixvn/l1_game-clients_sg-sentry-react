@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useSentryHelper, SentryLogLevel } from 'sg-sentry';
-import { SGSentryDevErrorBoundary } from 'sg-sentry';
-import { SentryLogProvider } from 'sg-sentry';
+import { useSentryHelper, SentryLogLevel } from './hooks/useSentry';
+import { SGSentryDevErrorBoundary } from './sentry/components/SGSentryDevErrorBoundary';
+import { SentryLogProvider } from './sentry';
 import { appSettingsWithSentry } from './_shared/app-settings';
 
 // Simple local ErrorSimulator component
@@ -100,8 +100,7 @@ const TestErrorPage: React.FC<TestErrorPageProps> = ({
                     environment: appSettingsWithSentry.sentryEnvironment || process.env.NODE_ENV || 'development',
                     componentName: 'TestErrorPage',
                     release: process.env.REACT_APP_VERSION || '1.0.0',
-                    debug: process.env.NODE_ENV === 'development',
-                    logLevel: SentryLogLevel.ERROR
+                    debug: process.env.NODE_ENV === 'development'
                 }}
             >
                 <div style={{

@@ -36,6 +36,9 @@ export interface IConfigStorage {
   setComponentLogLevel(componentName: string, level: string): void;
   isComponentEnabled(componentName: string): boolean;
   setComponentEnabled(componentName: string, enabled: boolean): void;
+  getComponentConfig(componentName: string): ComponentConfig | null;
+  setComponentConfig(componentName: string, config: ComponentConfig): void;
+  getAllComponentNames(): string[];
   clear(): void;
   clearComponent(componentName: string): void;
 }
@@ -69,6 +72,7 @@ export interface ComponentConfig {
   enabled?: boolean;
   enableWorkflowTracking?: boolean;
   enablePerformanceTracking?: boolean;
+  enableConsoleOverride?: boolean;
 }
 
 export interface WorkflowConfig {

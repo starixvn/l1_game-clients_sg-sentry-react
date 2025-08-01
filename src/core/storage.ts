@@ -10,6 +10,11 @@ export class LocalStorage implements IStorage {
     this.storage = storage || (typeof window !== 'undefined' ? window.localStorage : new Map() as any);
   }
 
+  // Public method to access the underlying storage for iteration
+  getStorage(): Storage {
+    return this.storage;
+  }
+
   getItem(key: string): string | null {
     try {
       return this.storage.getItem(key);
@@ -130,9 +135,10 @@ export class SentryConfigStorage implements IConfigStorage {
     // Clear all Sentry-related items
     const keys: string[] = [];
     
-    if (this.storage instanceof LocalStorage && this.storage.storage instanceof window.Storage) {
-      for (let i = 0; i < this.storage.storage.length; i++) {
-        const key = this.storage.storage.key(i);
+    if (this.storage instanceof LocalStorage && this.storage.getStorage() instanceof window.Storage) {
+      const storage = this.storage.getStorage();
+      for (let i = 0; i < storage.length; i++) {
+        const key = storage.key(i);
         if (key && key.startsWith(this.PREFIX)) {
           keys.push(key);
         }
@@ -155,9 +161,10 @@ export class SentryConfigStorage implements IConfigStorage {
   getAllComponentNames(): string[] {
     const components = new Set<string>();
     
-    if (this.storage instanceof LocalStorage && this.storage.storage instanceof window.Storage) {
-      for (let i = 0; i < this.storage.storage.length; i++) {
-        const key = this.storage.storage.key(i);
+    if (this.storage instanceof LocalStorage && this.storage.getStorage() instanceof window.Storage) {
+      const storage = this.storage.getStorage();
+      for (let i = 0; i < storage.length; i++) {
+        const key = storage.key(i);
         if (key && key.startsWith(this.COMPONENT_PREFIX)) {
           const parts = key.replace(this.COMPONENT_PREFIX, '').split(':');
           if (parts.length >= 1) {

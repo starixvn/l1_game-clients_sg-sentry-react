@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { useSentryHelper, SentryLogLevel } from 'sg-sentry';
-import { SGSentryDevErrorBoundary } from 'sg-sentry';
+import { useSentryHelper, SentryLogLevel } from '../../hooks/useSentry';
+import { SGSentryDevErrorBoundary } from '../../sentry/components/SGSentryDevErrorBoundary';
 
 interface GameBoardProps {
     gameId: string;

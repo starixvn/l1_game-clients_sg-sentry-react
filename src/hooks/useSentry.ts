@@ -135,4 +135,10 @@ export function useWorkflowSentry(componentName: string, logLevel?: SentryLogLev
     enableWorkflowTracking: true,
     enablePerformanceTracking: true
   });
-} 
+}
+
+// Export alias for backward compatibility
+export const useSentryHelper = useSentry;
+
+// Re-export types for convenience
+export { SentryLogLevel, WorkflowState } from '../types'; 
