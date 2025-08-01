@@ -14,7 +14,9 @@
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "demo": "tsx demo/index.tsx",
+    "demo:dev": "tsx --watch demo/index.tsx"
   },
   "keywords": [
     "sentry",
@@ -27,11 +29,14 @@
   "author": "SG Team",
   "license": "MIT",
   "dependencies": {
-    "@sentry/react": "^10.0.0"
+    "@sentry/react": "^10.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/jest": "^29.0.0",
     "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^8.0.0",
@@ -40,6 +45,7 @@
     "rimraf": "^3.0.0",
     "ts-jest": "^29.0.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.0.0",
     "typescript": "^4.9.0"
   },
   "peerDependencies": {

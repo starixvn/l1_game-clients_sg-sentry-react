@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG-Sentry Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        #root {
+            min-height: 100vh;
+        }
+
+        /* Loading spinner */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error message */
+        .error {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .error h1 {
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+
+        .error p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .error button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .error button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="loading">
+            <div class="spinner"></div>
+            <span>Loading SG-Sentry Demo...</span>
+        </div>
+    </div>
+
+    <script>
+        // Error handling for demo loading
+        window.addEventListener('error', function(event) {
+            const root = document.getElementById('root');
+            root.innerHTML = `
+                <div class="error">
+                    <h1>Demo Loading Error</h1>
+                    <p>Failed to load the SG-Sentry demo.</p>
+                    <p>Error: ${event.error?.message || 'Unknown error'}</p>
+                    <button onclick="location.reload()">Reload Page</button>
+                </div>
+            `;
+        });
+
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(event) {
+            const root = document.getElementById('root');
+            root.innerHTML = `
+                <div class="error">
+                    <h1>Demo Loading Error</h1>
+                    <p>Failed to load the SG-Sentry demo.</p>
+                    <p>Promise Error: ${event.reason?.message || 'Unknown promise error'}</p>
+                    <button onclick="location.reload()">Reload Page</button>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html> 

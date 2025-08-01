@@ -1,8 +1,8 @@
 # SG-Sentry
 
-A comprehensive Sentry logging and error tracking library for SG projects, providing a unified interface for error monitoring, performance tracking, and workflow management.
+A clean, maintainable Sentry logging and error tracking library for SG projects, providing a unified interface for error monitoring, performance tracking, and workflow management.
 
-## Features
+## 🚀 Features
 
 - 🔍 **Comprehensive Error Tracking**: Capture and monitor errors with detailed context
 - 📊 **Performance Monitoring**: Track operation performance and identify bottlenecks
@@ -10,15 +10,39 @@ A comprehensive Sentry logging and error tracking library for SG projects, provi
 - 🎛️ **Configurable Logging**: Per-component log level configuration
 - 🎯 **React Hooks**: Easy integration with React components
 - 💾 **Local Storage**: Persistent configuration management
-- 🔧 **Dependency Injection**: Flexible architecture for testing and customization
+- 🔧 **Clean Architecture**: Well-organized, maintainable code structure
+- 📦 **TypeScript**: Full type safety and IntelliSense support
 
-## Installation
+## 📁 Project Structure
+
+```
+sg-sentry/
+├── src/
+│   ├── types/
+│   │   └── index.ts              # All TypeScript types and interfaces
+│   ├── core/
+│   │   ├── manager.ts            # Main SentryManager orchestrator
+│   │   ├── logger.ts             # SentryLogger implementation
+│   │   ├── workflow.ts           # WorkflowTracker implementation
+│   │   └── storage.ts            # Storage and configuration management
+│   ├── hooks/
+│   │   └── useSentry.ts          # React hooks for easy integration
+│   └── index.ts                  # Clean, organized exports
+├── demo/
+│   ├── index.tsx                 # Comprehensive React demo
+│   └── index.html                # Demo HTML host
+├── tests/                        # Unit tests
+├── package.json
+└── README.md
+```
+
+## 🛠️ Installation
 
 ```bash
 npm install sg-sentry
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Basic Usage
 
@@ -46,10 +70,10 @@ startWorkflow(workflowId, 'User Login', 'AuthComponent', { userId: '123' });
 
 ```typescript
 import React from 'react';
-import { useSentryHelper } from 'sg-sentry';
+import { useSentry } from 'sg-sentry';
 
 const MyComponent: React.FC = () => {
-    const { logInfo, logError, startWorkflow, trackPerformance } = useSentryHelper({
+    const { logInfo, logError, startWorkflow, trackPerformance } = useSentry({
         componentName: 'MyComponent',
         logLevel: 'debug',
         enableWorkflowTracking: true
@@ -62,7 +86,6 @@ const MyComponent: React.FC = () => {
         
         try {
             await trackPerformance('api-call', async () => {
-                // Your async operation here
                 const result = await fetch('/api/data');
                 return result.json();
             });
@@ -77,61 +100,46 @@ const MyComponent: React.FC = () => {
 };
 ```
 
-## API Reference
+## 📚 API Reference
 
 ### Core Functions
 
-#### `configureSentry(config)`
-Initialize the Sentry system with global configuration.
-
+#### Configuration
 ```typescript
-configureSentry({
-    enabled: true,
-    defaultLogLevel: 'info',
-    enableWorkflowTracking: true,
-    enablePerformanceTracking: true,
-    enableConsoleOverride: true
-});
+configureSentry(config)           // Initialize Sentry system
+enableSentry()                    // Enable Sentry globally
+disableSentry()                   // Disable Sentry globally
+setSentryLogLevel(level)          // Set global log level
 ```
 
-#### Logging Functions
-
+#### Logging
 ```typescript
-logTrace(componentName, message, context?)
-logDebug(componentName, message, context?)
-logInfo(componentName, message, context?)
-logWarning(componentName, message, context?)
-logError(componentName, error, context?)
-logFatal(componentName, error, context?)
+logTrace(component, message, context?)
+logDebug(component, message, context?)
+logInfo(component, message, context?)
+logWarning(component, message, context?)
+logError(component, error, context?)
+logFatal(component, error, context?)
 ```
 
-#### Workflow Functions
-
+#### Workflow Tracking
 ```typescript
 startWorkflow(id, name, component, metadata?)
-updateWorkflow(id, state, metadata?)
-completeWorkflow(id, success?, metadata?)
+updateWorkflow(id, state, component, metadata?)
+completeWorkflow(id, component, success?, metadata?)
 ```
 
 #### Performance Tracking
-
 ```typescript
 trackPerformance(component, operation, asyncFunction)
 ```
 
 ### React Hooks
 
-#### `useSentryHelper(options)`
-Main hook providing full Sentry functionality.
-
+#### `useSentry(options)`
+Main hook with full functionality:
 ```typescript
-const {
-    logInfo,
-    logError,
-    startWorkflow,
-    trackPerformance,
-    isLoggingEnabled
-} = useSentryHelper({
+const sentry = useSentry({
     componentName: 'MyComponent',
     logLevel: 'debug',
     enableWorkflowTracking: true,
@@ -140,34 +148,122 @@ const {
 ```
 
 #### `useSimpleSentry(componentName)`
-Simplified hook for basic logging only.
+Simple hook for basic logging only:
+```typescript
+const sentry = useSimpleSentry('MyComponent');
+```
 
-#### `useWorkflowSentry(componentName)`
-Hook optimized for workflow tracking.
+#### `useWorkflowSentry(componentName, logLevel?)`
+Hook focused on workflow tracking:
+```typescript
+const sentry = useWorkflowSentry('MyComponent', 'info');
+```
 
-### Configuration
-
-#### Log Levels
-- `trace`: Most verbose logging
-- `debug`: Debug information
-- `info`: General information
-- `warn`: Warnings
-- `error`: Errors only
-- `fatal`: Fatal errors only
-
-#### Workflow States
-- `started`: Workflow initiated
-- `in_progress`: Workflow running
-- `completed`: Workflow finished successfully
-- `failed`: Workflow failed
-- `cancelled`: Workflow cancelled
-
-## Advanced Usage
-
-### Custom Storage Implementation
+### Types
 
 ```typescript
-import { createConfigStorage, LocalStorage } from 'sg-sentry';
+enum SentryLogLevel {
+    TRACE = 'trace',
+    DEBUG = 'debug',
+    INFO = 'info',
+    WARNING = 'warning',
+    ERROR = 'error',
+    FATAL = 'fatal'
+}
+
+enum WorkflowState {
+    STARTED = 'started',
+    IN_PROGRESS = 'in_progress',
+    COMPLETED = 'completed',
+    FAILED = 'failed',
+    CANCELLED = 'cancelled'
+}
+```
+
+## 🎮 Demo
+
+Run the interactive demo to see all features in action:
+
+```bash
+# Install dependencies
+npm install
+
+# Run the demo
+npm run demo
+
+# Or run in watch mode
+npm run demo:dev
+```
+
+The demo showcases:
+- ✅ All logging levels
+- ✅ Error handling and capture
+- ✅ Workflow tracking
+- ✅ Performance monitoring
+- ✅ React hooks usage
+- ✅ Configuration management
+- ✅ Real-time activity logs
+
+## 🧪 Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+## 🏗️ Development
+
+```bash
+# Build the library
+npm run build
+
+# Build in watch mode
+npm run dev
+
+# Lint code
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
+```
+
+## 📋 Configuration Options
+
+### Global Configuration
+```typescript
+interface GlobalSentryConfig {
+    enabled?: boolean;
+    defaultLogLevel?: SentryLogLevel;
+    enableWorkflowTracking?: boolean;
+    enablePerformanceTracking?: boolean;
+    enableConsoleOverride?: boolean;
+    dsn?: string;
+    environment?: string;
+    release?: string;
+}
+```
+
+### Component Configuration
+```typescript
+interface ComponentConfig {
+    logLevel?: SentryLogLevel;
+    enabled?: boolean;
+    enableWorkflowTracking?: boolean;
+    enablePerformanceTracking?: boolean;
+}
+```
+
+## 🔧 Advanced Usage
+
+### Custom Storage Implementation
+```typescript
+import { IStorage, SentryConfigStorage } from 'sg-sentry';
 
 class CustomStorage implements IStorage {
     getItem(key: string): string | null { /* implementation */ }
@@ -176,83 +272,38 @@ class CustomStorage implements IStorage {
     clear(): void { /* implementation */ }
 }
 
-const customConfigStorage = createConfigStorage(new CustomStorage());
+const configStorage = new SentryConfigStorage(new CustomStorage());
 ```
 
-### Component-Specific Configuration
-
+### Direct Manager Usage
 ```typescript
-import { configureComponent } from 'sg-sentry';
+import { SentryManager } from 'sg-sentry';
 
-configureComponent('AuthComponent', {
-    logLevel: 'debug',
-    enableWorkflowTracking: true,
-    enablePerformanceTracking: false
+const manager = SentryManager.getInstance();
+manager.initialize({
+    globalConfig: {
+        enabled: true,
+        defaultLogLevel: 'debug'
+    }
 });
 ```
 
-### Performance Monitoring
-
-```typescript
-import { trackPerformance } from 'sg-sentry';
-
-const result = await trackPerformance('MyComponent', 'database-query', async () => {
-    return await database.query('SELECT * FROM users');
-});
-```
-
-## Testing
-
-The library includes comprehensive test coverage and provides utilities for testing:
-
-```typescript
-import { resetLogger, resetManager } from 'sg-sentry';
-
-beforeEach(() => {
-    resetLogger();
-    resetManager();
-});
-```
-
-## Migration from Existing Sentry Implementations
-
-### From sg-game-client logger
-
-```typescript
-// Old way
-import { sentryLogger } from './logger';
-sentryLogger.logInfo('component', 'message');
-
-// New way
-import { logInfo } from 'sg-sentry';
-logInfo('component', 'message');
-```
-
-### From hot-league-wall sentry
-
-```typescript
-// Old way
-import { sentryHelper } from './sentry';
-sentryHelper.logInfo('component', 'message');
-
-// New way
-import { logInfo } from 'sg-sentry';
-logInfo('component', 'message');
-```
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
 4. Add tests for new functionality
-5. Ensure all tests pass
+5. Run the test suite
 6. Submit a pull request
 
-## License
+## 📄 License
 
-MIT License - see LICENSE file for details.
+MIT License - see LICENSE file for details
 
-## Support
+## 🆘 Support
 
-For support and questions, please open an issue on GitHub or contact the SG team. 
+For issues and questions:
+- Create an issue on GitHub
+- Check the demo for usage examples
+- Review the test files for implementation details 
