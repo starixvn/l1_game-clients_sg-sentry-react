@@ -21,31 +21,62 @@ export const useGameCronSentry = (options: {
         enablePerformanceTracking: false
     });
 
-    const addGameCronLog = useCallback((message: string, context?: Record<string, any>) => {
-        logInfo(message, context);
-    }, [logInfo]);
+    // Safely create callback functions with fallbacks
+    let addGameCronLog: (message: string, context?: Record<string, any>) => void;
+    let flushGameCronBatches: () => void;
+    let getGameCronBatchStats: () => { totalLogs: number; pendingLogs: number; lastFlush: number };
+    let startGameCron: (props: any) => void;
+    let completeGameCron: (success: boolean, metadata?: Record<string, any>) => void;
 
-    const flushGameCronBatches = useCallback(() => {
-        // No-op for backward compatibility
-        logDebug('Game cron batches flushed', { componentName });
-    }, [logDebug, componentName]);
+    try {
+        addGameCronLog = useCallback((message: string, context?: Record<string, any>) => {
+            logInfo(message, context);
+        }, [logInfo]);
 
-    const getGameCronBatchStats = useCallback(() => {
-        // Return empty stats for backward compatibility
-        return {
-            totalLogs: 0,
-            pendingLogs: 0,
-            lastFlush: Date.now()
+        flushGameCronBatches = useCallback(() => {
+            // No-op for backward compatibility
+            logDebug('Game cron batches flushed', { componentName });
+        }, [logDebug, componentName]);
+
+        getGameCronBatchStats = useCallback(() => {
+            // Return empty stats for backward compatibility
+            return {
+                totalLogs: 0,
+                pendingLogs: 0,
+                lastFlush: Date.now()
+            };
+        }, []);
+
+        startGameCron = useCallback((props: any) => {
+            logInfo('Game cron started', { props, componentName });
+        }, [logInfo, componentName]);
+
+        completeGameCron = useCallback((success: boolean, metadata?: Record<string, any>) => {
+            logInfo('Game cron completed', { success, metadata, componentName });
+        }, [logInfo, componentName]);
+    } catch (error) {
+        // Fallback if React hooks are not available
+        console.warn('useGameCronSentry: useCallback not available, using fallbacks', error);
+        addGameCronLog = (message: string, context?: Record<string, any>) => {
+            logInfo(message, context);
         };
-    }, []);
-
-    const startGameCron = useCallback((props: any) => {
-        logInfo('Game cron started', { props, componentName });
-    }, [logInfo, componentName]);
-
-    const completeGameCron = useCallback((success: boolean, metadata?: Record<string, any>) => {
-        logInfo('Game cron completed', { success, metadata, componentName });
-    }, [logInfo, componentName]);
+        flushGameCronBatches = () => {
+            logDebug('Game cron batches flushed', { componentName });
+        };
+        getGameCronBatchStats = () => {
+            return {
+                totalLogs: 0,
+                pendingLogs: 0,
+                lastFlush: Date.now()
+            };
+        };
+        startGameCron = (props: any) => {
+            logInfo('Game cron started', { props, componentName });
+        };
+        completeGameCron = (success: boolean, metadata?: Record<string, any>) => {
+            logInfo('Game cron completed', { success, metadata, componentName });
+        };
+    }
 
     return {
         addGameCronLog,

@@ -63,6 +63,18 @@ export const useSentryHelper = (options: UseSentryHelperOptions = {}) => {
         return sentryHelper.isLoggingEnabled(componentName, level);
     }, [componentName, sentryHelper]);
 
+    // Create workflowTracker object for backward compatibility
+    const workflowTracker = {
+        start: (name: string, metadata?: Record<string, any>) => {
+            const workflowId = `${componentName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            sentryHelper.startWorkflow(workflowId, name, componentName, metadata);
+            return workflowId;
+        },
+        update: updateWorkflow,
+        complete: completeWorkflow,
+        track: trackPerformance
+    };
+
     return {
         logTrace,
         logDebug,
@@ -74,7 +86,8 @@ export const useSentryHelper = (options: UseSentryHelperOptions = {}) => {
         completeWorkflow,
         trackPerformance,
         isLoggingEnabled,
-        sentryHelper
+        sentryHelper,
+        workflowTracker // Add workflowTracker for backward compatibility
     };
 };
 

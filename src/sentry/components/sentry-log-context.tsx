@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect, useMemo } from 'react';
 import { sentryManager, configureSentryManager, SentryLogLevel } from '../index';
 import { SentryManagerRefactored as SentryManager } from '../core/sentry-manager-refactored';
 import { useSessionReplay } from '../hooks/useSessionReplay';
@@ -105,19 +105,16 @@ function setupComponentScopedErrorHandlers(sentryManager: SentryManager, compone
             errorStack.includes('RNGSoccer');
 
         if (isHotLeagueWallError) {
-            const errorArg = args.find(arg => arg instanceof Error);
-            if (errorArg) {
-                sentryManager.captureError(errorArg, {
-                    tags: {
-                        source: 'hot_league_wall_component',
-                        component: componentName
-                    },
-                    extra: {
-                        consoleArgs: args,
-                        errorStack: errorStack
-                    }
-                });
-            }
+            sentryManager.captureError(args.find(arg => arg instanceof Error) || new Error(args.join(' ')), {
+                tags: {
+                    source: 'console_error',
+                    component: componentName
+                },
+                extra: {
+                    consoleArgs: args,
+                    errorStack: errorStack
+                }
+            });
         }
     };
 
@@ -126,30 +123,30 @@ function setupComponentScopedErrorHandlers(sentryManager: SentryManager, compone
         originalConsoleWarn.apply(console, args);
 
         // Check if the warning is from hot-league-wall components
-        const warningStack = new Error().stack || '';
-        const isHotLeagueWallWarning = warningStack.includes('hot-league-wall') ||
-            warningStack.includes('HotLeagueWall') ||
-            warningStack.includes('GameBoard') ||
-            warningStack.includes('GamePiece') ||
-            warningStack.includes('BetPanel') ||
-            warningStack.includes('Lobby') ||
-            warningStack.includes('RNGSoccer');
+        const errorStack = new Error().stack || '';
+        const isHotLeagueWallWarning = errorStack.includes('hot-league-wall') ||
+            errorStack.includes('HotLeagueWall') ||
+            errorStack.includes('GameBoard') ||
+            errorStack.includes('GamePiece') ||
+            errorStack.includes('BetPanel') ||
+            errorStack.includes('Lobby') ||
+            errorStack.includes('RNGSoccer');
 
         if (isHotLeagueWallWarning) {
             sentryManager.logWarning(args.join(' '), {
                 tags: {
-                    source: 'hot_league_wall_component',
+                    source: 'console_warn',
                     component: componentName
                 },
                 extra: {
                     consoleArgs: args,
-                    warningStack: warningStack
+                    errorStack: errorStack
                 }
             });
         }
     };
 
-    // Set up error boundary for React components
+    // Set up React error boundary handler
     const handleReactError = (error: Error, errorInfo: React.ErrorInfo) => {
         const errorStack = error.stack || '';
         const isHotLeagueWallError = errorStack.includes('hot-league-wall') ||
@@ -163,7 +160,7 @@ function setupComponentScopedErrorHandlers(sentryManager: SentryManager, compone
         if (isHotLeagueWallError) {
             sentryManager.captureError(error, {
                 tags: {
-                    source: 'react_error_boundary',
+                    source: 'react_error',
                     component: componentName
                 },
                 extra: {
@@ -187,32 +184,32 @@ function sentryLogReducer(state: SentryLogState, action: SentryLogAction): Sentr
         case 'ADD_LOG':
             return {
                 ...state,
-                logs: [...state.logs, action.payload],
+                logs: [...state.logs, action.payload]
             };
         case 'CLEAR_LOGS':
             return {
                 ...state,
-                logs: [],
+                logs: []
             };
         case 'SET_SESSION_ID':
             return {
                 ...state,
-                sessionId: action.payload,
+                sessionId: action.payload
             };
         case 'SET_GAME_ID':
             return {
                 ...state,
-                gameId: action.payload,
+                gameId: action.payload
             };
         case 'SET_ENABLED':
             return {
                 ...state,
-                isEnabled: action.payload,
+                isEnabled: action.payload
             };
         case 'SET_SENTRY_MANAGER':
             return {
                 ...state,
-                sentryManager: action.payload,
+                sentryManager: action.payload
             };
         default:
             return state;
@@ -252,6 +249,8 @@ export const SentryLogProvider: React.FC<SentryLogProviderProps> = ({
 }) => {
     // Initialize Session Replay
     const sessionReplay = useSessionReplay(sentryConfig?.componentName || 'SentryLogProvider');
+    
+    // Initialize state
     const [state, dispatch] = useReducer(sentryLogReducer, {
         ...initialState,
         sessionId: sessionId || initialState.sessionId,
@@ -259,14 +258,13 @@ export const SentryLogProvider: React.FC<SentryLogProviderProps> = ({
         isEnabled: enabled,
     });
 
+    // Refs for avoiding dependency issues
     const maxLogsRef = useRef(maxLogs);
     const autoSendOnUnmountRef = useRef(autoSendOnUnmount);
-
-    // Use refs to store current state values to avoid dependency issues
     const stateRef = useRef(state);
     stateRef.current = state;
 
-    // Initialize Sentry Manager - only run once when sentryConfig changes
+    // Initialize Sentry Manager
     useEffect(() => {
         if (sentryConfig) {
             try {
@@ -282,7 +280,7 @@ export const SentryLogProvider: React.FC<SentryLogProviderProps> = ({
                 const sentryManager = SentryManager.getInstance();
                 dispatch({ type: 'SET_SENTRY_MANAGER', payload: sentryManager });
 
-                // Log initialization (this is the only immediate log sent to Sentry)
+                // Log initialization
                 sentryManager.logInfo('SentryLogProvider initialized', {
                     sessionId: stateRef.current.sessionId,
                     gameId: stateRef.current.gameId,
@@ -296,14 +294,13 @@ export const SentryLogProvider: React.FC<SentryLogProviderProps> = ({
                 console.error('Failed to initialize Sentry Manager:', error);
             }
         }
-    }, [sentryConfig]); // Only depend on sentryConfig
+    }, [sentryConfig]);
 
-    // Update maxLogs when prop changes
+    // Update refs when props change
     useEffect(() => {
         maxLogsRef.current = maxLogs;
     }, [maxLogs]);
 
-    // Update autoSendOnUnmount when prop changes
     useEffect(() => {
         autoSendOnUnmountRef.current = autoSendOnUnmount;
     }, [autoSendOnUnmount]);
@@ -315,7 +312,7 @@ export const SentryLogProvider: React.FC<SentryLogProviderProps> = ({
                 sendLogsToSentry().catch(console.error);
             }
         };
-    }, []); // Empty dependency array since we use refs
+    }, []);
 
     // Add a log entry
     const addLog = useCallback((
@@ -336,21 +333,18 @@ export const SentryLogProvider: React.FC<SentryLogProviderProps> = ({
 
         dispatch({ type: 'ADD_LOG', payload: logEntry });
 
-        // Note: Logs are only sent to Sentry when sendLogsToSentry() is called
-        // This prevents too many requests to Sentry during gameplay
-
-        // Trim logs if they exceed maxLogs - use ref to avoid dependency issues
+        // Trim logs if they exceed maxLogs
         if (stateRef.current.logs.length >= maxLogsRef.current) {
             const trimmedLogs = stateRef.current.logs.slice(-maxLogsRef.current + 1);
             dispatch({ type: 'CLEAR_LOGS' });
-            trimmedLogs.forEach(log => dispatch({ type: 'ADD_LOG', payload: log }));
+            trimmedLogs.forEach((log: SentryLogEntry) => dispatch({ type: 'ADD_LOG', payload: log }));
         }
-    }, []); // Empty dependency array since we use refs
+    }, []);
 
     // Get merged logs as a string
     const getMergedLogs = useCallback(() => {
         return stateRef.current.logs
-            .map(log => {
+            .map((log: SentryLogEntry) => {
                 const timestamp = new Date(log.timestamp).toISOString();
                 const prefix = `[${timestamp}] [${log.sessionId}]`;
                 const gamePrefix = log.gameId ? ` [Game:${log.gameId}]` : '';
@@ -359,7 +353,7 @@ export const SentryLogProvider: React.FC<SentryLogProviderProps> = ({
                 return `${prefix}${gamePrefix}${componentPrefix}${levelPrefix}: ${log.message}`;
             })
             .join('\n');
-    }, []); // Empty dependency array since we use refs
+    }, []);
 
     // Clear all logs
     const clearLogs = useCallback(() => {
@@ -395,7 +389,7 @@ export const SentryLogProvider: React.FC<SentryLogProviderProps> = ({
 
         try {
             // Send each log individually to Sentry with proper metadata
-            stateRef.current.logs.forEach(log => {
+            stateRef.current.logs.forEach((log: SentryLogEntry) => {
                 const metadata = {
                     sessionId: log.sessionId,
                     gameId: log.gameId,
@@ -445,7 +439,7 @@ export const SentryLogProvider: React.FC<SentryLogProviderProps> = ({
             console.error('Failed to send logs to Sentry:', error);
             throw error;
         }
-    }, [clearLogs, getMergedLogs]); // Depend on clearLogs and getMergedLogs
+    }, [clearLogs, getMergedLogs]);
 
     // Sentry-specific logging methods
     const logTrace = useCallback((message: string, metadata?: Record<string, any>) => {
@@ -472,7 +466,8 @@ export const SentryLogProvider: React.FC<SentryLogProviderProps> = ({
         addLog(message, { level: 'fatal', metadata });
     }, [addLog]);
 
-    const contextValue: SentryLogContextType = React.useMemo(() => ({
+    // Create context value
+    const contextValue = useMemo(() => ({
         logs: state.logs,
         sessionId: state.sessionId,
         gameId: state.gameId,

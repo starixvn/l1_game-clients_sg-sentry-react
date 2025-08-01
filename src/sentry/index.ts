@@ -156,9 +156,8 @@ export const updateSentryConfiguration = (dsn?: string, environment?: string) =>
 export const captureError = (error: Error | string, context?: any) => sentryManager.captureError(error, context);
 
 // Legacy hook exports for backward compatibility
-export const useSentryHelper = useSentryHelperRefactored;
-export const useSimpleSentry = useSimpleSentryRefactored;
-export const useWorkflowSentry = useWorkflowSentryRefactored;
+// Using original hooks for stability - refactored versions have React context issues
+export { useSentryHelper, useSimpleSentry, useWorkflowSentry } from '../hooks/useSentryHelper';
 
 // Additional hook exports for backward compatibility
 export { useGameCronSentry } from './hooks/useGameCronSentry';
