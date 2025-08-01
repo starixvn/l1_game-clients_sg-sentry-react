@@ -1,0 +1,72 @@
+{
+    "sentry": {
+        "dsn": "https://25edcde4c336c7086e5ae4f5e565a672@o4509749941305344.ingest.us.sentry.io/4509749948973056",
+        "environment": "LOCAL1_VG",
+        "logLevel": "debug",
+        "enableSessionReplay": true,
+        "sessionReplaySampleRate": 1.0,
+        "errorSampleRate": 1.0,
+        "componentLogging": {
+            "enabled": true,
+            "defaultLogLevel": "debug",
+            "components": {
+                "SentryDemo": {
+                    "logLevel": "debug",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "DemoLayout": {
+                    "logLevel": "debug",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "ErrorSimulator": {
+                    "logLevel": "debug",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "LogViewer": {
+                    "logLevel": "debug",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": false
+                },
+                "ConfigurationPanel": {
+                    "logLevel": "debug",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "GameBoard": {
+                    "logLevel": "debug",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "WorkflowTracker": {
+                    "logLevel": "debug",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "PerformanceMonitor": {
+                    "logLevel": "debug",
+                    "enableWorkflowTracking": false,
+                    "enablePerformanceTracking": true
+                }
+            }
+        }
+    },
+    "systemType": "VG",
+    "serverDomain": "localhost",
+    "ssl": false,
+    "subDomain": "local-vg",
+    "env": "LOCAL1_VG",
+    "enableMsgpackParserAllGames": false,
+    "enableMsgpackParserOnNotification": false,
+    "simulatorConfigs": {
+        "demoApiUrl": "http://localhost:3002",
+        "operatorId": "LOCAL_VG_OPERATOR",
+        "operatorSecret": "LOCAL_VG_SECRET",
+        "operatorToken": "LOCAL_VG_TOKEN"
+    },
+    "defaultGameId": 1,
+    "userServicePath": "user",
+    "appType": 2
+}

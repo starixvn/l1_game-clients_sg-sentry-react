@@ -1,0 +1,72 @@
+{
+    "sentry": {
+        "dsn": "https://25edcde4c336c7086e5ae4f5e565a672@o4509749941305344.ingest.us.sentry.io/4509749948973056",
+        "environment": "LOCAL1",
+        "logLevel": "error",
+        "enableSessionReplay": true,
+        "sessionReplaySampleRate": 1.0,
+        "errorSampleRate": 1.0,
+        "componentLogging": {
+            "enabled": true,
+            "defaultLogLevel": "error",
+            "components": {
+                "SentryDemo": {
+                    "logLevel": "error",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "DemoLayout": {
+                    "logLevel": "error",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "ErrorSimulator": {
+                    "logLevel": "error",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "LogViewer": {
+                    "logLevel": "error",
+                    "enableWorkflowTracking": false,
+                    "enablePerformanceTracking": false
+                },
+                "ConfigurationPanel": {
+                    "logLevel": "error",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "GameBoard": {
+                    "logLevel": "error",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "WorkflowTracker": {
+                    "logLevel": "error",
+                    "enableWorkflowTracking": true,
+                    "enablePerformanceTracking": true
+                },
+                "PerformanceMonitor": {
+                    "logLevel": "error",
+                    "enableWorkflowTracking": false,
+                    "enablePerformanceTracking": true
+                }
+            }
+        }
+    },
+    "systemType": "SG",
+    "serverDomain": "sg-sentry-demo.com",
+    "ssl": true,
+    "subDomain": "demo",
+    "env": "LOCAL1",
+    "enableMsgpackParserAllGames": false,
+    "enableMsgpackParserOnNotification": false,
+    "simulatorConfigs": {
+        "demoApiUrl": "https://api.sg-sentry-demo.com",
+        "operatorId": "DEMO_OPERATOR",
+        "operatorSecret": "DEMO_SECRET",
+        "operatorToken": "DEMO_TOKEN"
+    },
+    "defaultGameId": 1,
+    "userServicePath": "user",
+    "appType": 1
+}

@@ -4,3 +4,5 @@ coverage/
 reports/
 
 yarn.lock
+demo-nextjs/node_modules/
+demo-nextjs/.next/
