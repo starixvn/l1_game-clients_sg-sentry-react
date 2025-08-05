@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect, useMemo } from 'react';
 import { sentryManager, configureSentryManager, SentryLogLevel } from '../index';
-import { SentryManagerRefactored as SentryManager } from '../core/sentry-manager-refactored';
+import { SentryManager } from '../core/sentry-manager';
 import { useSessionReplay } from '../hooks/useSessionReplay';
 
 // Types for the Sentry-integrated logging system

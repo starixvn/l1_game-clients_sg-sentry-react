@@ -27,7 +27,7 @@ jest.mock('sg-sentry', () => ({
 describe('Sentry Integration', () => {
     beforeEach(() => {
         jest.clearAllMocks()
-        
+
         // Mock window.Sentry
         Object.defineProperty(window, 'Sentry', {
             value: {
@@ -44,7 +44,7 @@ describe('Sentry Integration', () => {
 
     it('should render ErrorSimulator with Sentry integration', () => {
         render(<ErrorSimulator />)
-        
+
         expect(screen.getByText('Error Simulator')).toBeInTheDocument()
         expect(screen.getByText('JavaScript Error')).toBeInTheDocument()
     })
@@ -58,10 +58,10 @@ describe('Sentry Integration', () => {
 
     it('should be able to simulate errors', async () => {
         render(<ErrorSimulator />)
-        
+
         const jsErrorButton = screen.getByText('JavaScript Error')
         expect(jsErrorButton).toBeInTheDocument()
-        
+
         // The button should be clickable
         expect(jsErrorButton).not.toBeDisabled()
     })

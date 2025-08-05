@@ -14,15 +14,15 @@ import {
 } from './sentry-types';
 
 /**
- * Refactored SentryManager that follows SOLID principles
+ * SentryManager that follows SOLID principles
  * - Single Responsibility: Orchestrates different services
  * - Open/Closed: Extensible through dependency injection
  * - Liskov Substitution: Uses interfaces
  * - Interface Segregation: Uses specific interfaces
  * - Dependency Inversion: Depends on abstractions
  */
-export class SentryManagerRefactored {
-    private static instance: SentryManagerRefactored;
+export class SentryManager {
+    private static instance: SentryManager;
     private isInitialized = false;
     private componentName = '';
     private logger: ILogger;
@@ -43,21 +43,21 @@ export class SentryManagerRefactored {
         this.configStorage = configStorage;
     }
 
-    static getInstance(): SentryManagerRefactored {
-        if (!SentryManagerRefactored.instance) {
+    static getInstance(): SentryManager {
+        if (!SentryManager.instance) {
             const configStorage = new SentryConfigStorage();
             const logger = new SentryLogger('default');
             const workflowTracker = new WorkflowTracker('default');
             const consoleOverride = new ConsoleOverride(logger);
 
-            SentryManagerRefactored.instance = new SentryManagerRefactored(
+            SentryManager.instance = new SentryManager(
                 logger,
                 workflowTracker,
                 consoleOverride,
                 configStorage
             );
         }
-        return SentryManagerRefactored.instance;
+        return SentryManager.instance;
     }
 
     initialize(config: SentryManagerConfig): void {
@@ -98,24 +98,15 @@ export class SentryManagerRefactored {
                 enablePerformanceTracking: config.enablePerformanceTracking ?? true
             };
 
-            // Override console if enabled
-            if (config.enableConsoleOverride) {
-                this.consoleOverride.override();
-            }
-
             this.isInitialized = true;
-
-            this.logger.logInfo('SentryManager initialized successfully', {
-                componentName: this.componentName,
-                config: this.componentConfig
-            });
+            this.logger.logInfo('SentryManager initialized successfully', { config: this.componentConfig });
         } catch (error) {
-            this.logger.logError(error instanceof Error ? error : new Error('Failed to initialize SentryManager'));
+            console.error('Failed to initialize SentryManager:', error);
             throw error;
         }
     }
 
-    // Logging methods - delegate to logger
+    // Logging methods
     logTrace(message: string, context?: Record<string, any>): void {
         this.logger.logTrace(message, context);
     }
@@ -140,19 +131,20 @@ export class SentryManagerRefactored {
         this.logger.logFatal(error, context);
     }
 
-    // Manual error capture for specific error types
     captureError(error: Error | string, context?: Record<string, any>): void {
-        console.log('Manually capturing error:', error);
-        Sentry.captureException(error, {
-            tags: {
-                source: 'manual_capture',
-                component: this.componentName
-            },
-            extra: context
-        });
+        try {
+            if (typeof error === 'string') {
+                Sentry.captureMessage(error, 'error');
+            } else {
+                Sentry.captureException(error);
+            }
+            this.logger.logError(error, context);
+        } catch (sentryError) {
+            console.error('Failed to capture error in Sentry:', sentryError);
+        }
     }
 
-    // Workflow methods - delegate to workflow tracker
+    // Workflow methods
     startWorkflow(workflowId: string, workflowName: string, metadata?: Record<string, any>): void {
         this.workflowTracker.startWorkflow(workflowId, workflowName, metadata);
     }
@@ -169,20 +161,25 @@ export class SentryManagerRefactored {
         return this.workflowTracker.trackPerformance(operationName, operation);
     }
 
-    // Configuration methods - delegate to config storage
+    // Configuration methods
     configureComponent(config: Partial<ComponentConfig>): void {
+        if (!this.componentConfig) {
+            this.componentConfig = {
+                name: this.componentName,
+                logLevel: SentryLogLevel.ERROR,
+                enableWorkflowTracking: true,
+                enablePerformanceTracking: true
+            };
+        }
+
+        this.componentConfig = { ...this.componentConfig, ...config };
+
+        // Update logger level
         if (config.logLevel) {
-            this.configStorage.setLogLevel(config.logLevel);
             (this.logger as SentryLogger).setLogLevel(config.logLevel);
         }
 
-        if (config.name) {
-            this.componentName = config.name;
-        }
-
-        this.componentConfig = { ...this.componentConfig, ...config } as ComponentConfig;
-
-        this.logger.logInfo('Component configuration updated', { config: this.componentConfig });
+        this.logger.logInfo('Component configured', { config: this.componentConfig });
     }
 
     getComponentConfig(): ComponentConfig | undefined {
@@ -193,7 +190,7 @@ export class SentryManagerRefactored {
         return this.logger.isLoggingEnabled(level);
     }
 
-    // Storage methods - delegate to config storage
+    // Storage methods
     setLocalStorageConfig(config: { logLevel?: string; enabled?: boolean; debugMode?: boolean }): void {
         if (config.logLevel) this.configStorage.setLogLevel(config.logLevel);
         if (config.enabled !== undefined) this.configStorage.setEnabled(config.enabled);
@@ -214,19 +211,18 @@ export class SentryManagerRefactored {
     }
 
     cleanup(): void {
-        try {
-            this.consoleOverride.restore();
-            this.isInitialized = false;
-            this.logger.logInfo('SentryManager cleanup completed');
-        } catch (error) {
-            this.logger.logError(error instanceof Error ? error : new Error('Failed to cleanup SentryManager'));
-        }
+        this.isInitialized = false;
+        this.componentConfig = undefined;
+        this.componentName = '';
+        this.logger.logInfo('SentryManager cleaned up');
     }
 
     close(): void {
-        this.cleanup();
-        Sentry.close();
+        try {
+            Sentry.close();
+            this.cleanup();
+        } catch (error) {
+            console.error('Failed to close Sentry:', error);
+        }
     }
-
-
 } 

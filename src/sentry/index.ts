@@ -1,14 +1,13 @@
 // @/sentry - Refactored entry point following SOLID principles
 
-import { SentryManagerRefactored } from './core/sentry-manager-refactored';
-import { SentryHelperRefactored } from './utils/sentry-helper-refactored';
+import { SentryManager } from './core/sentry-manager';
+import { SentryHelper } from './utils/sentry-helper';
 import { SentryLogger } from './core/logger/sentry-logger';
 import { WorkflowTracker } from './core/workflow/workflow-tracker';
 import { ConsoleOverride } from './core/console/console-override';
 import { SentryConfigStorage, LocalStorage } from './core/storage/local-storage';
 // Import types for interface definitions
 import { SentryLogLevel, WorkflowState } from './core/sentry-types';
-import { useSentryHelperRefactored, useSimpleSentryRefactored, useWorkflowSentryRefactored } from './hooks/useSentryHelperRefactored';
 
 // Core interfaces definitions
 export interface IStorage {
@@ -71,22 +70,22 @@ export { WorkflowTracker } from './core/workflow/workflow-tracker';
 // Console exports
 export { ConsoleOverride } from './core/console/console-override';
 
-// Refactored manager exports
+// Manager exports
 export {
-    SentryManagerRefactored
-} from './core/sentry-manager-refactored';
+    SentryManager
+} from './core/sentry-manager';
 
-// Refactored helper exports
+// Helper exports
 export {
-    SentryHelperRefactored
-} from './utils/sentry-helper-refactored';
+    SentryHelper
+} from './utils/sentry-helper';
 
-// Refactored hooks exports
+// Hooks exports
 export {
-    useSentryHelperRefactored,
-    useSimpleSentryRefactored,
-    useWorkflowSentryRefactored
-} from './hooks/useSentryHelperRefactored';
+    useSentryHelper,
+    useSimpleSentry,
+    useWorkflowSentry
+} from './hooks/useSentryHelper';
 
 // Type exports
 export type {
@@ -105,8 +104,8 @@ export {
 } from './core/sentry-types';
 
 // Utility functions for backward compatibility
-export const createSentryManager = () => SentryManagerRefactored.getInstance();
-export const createSentryHelper = () => SentryHelperRefactored.getInstance();
+export const createSentryManager = () => SentryManager.getInstance();
+export const createSentryHelper = () => SentryHelper.getInstance();
 
 // Factory functions for dependency injection
 export const createLogger = (componentName: string, logLevel?: SentryLogLevel) =>
@@ -121,7 +120,7 @@ export const createConfigStorage = (storage?: IStorage) =>
 export const createConsoleOverride = (logger: ILogger) =>
     new ConsoleOverride(logger);
 
-// Backward compatibility exports (deprecated - use refactored versions)
+// Backward compatibility exports (deprecated - use new versions)
 export const sentryManager = createSentryManager();
 export const sentryHelper = createSentryHelper();
 
@@ -152,12 +151,12 @@ export const logWarning = (component: string, warning: string, context?: any) =>
 export const logInfo = (component: string, info: string, context?: any) => sentryHelper.logInfo(component, info, context);
 export const logDebug = (component: string, debug: string, context?: any) => sentryHelper.logDebug(component, debug, context);
 export const logTrace = (component: string, trace: string, context?: any) => sentryHelper.logTrace(component, trace, context);
+export const logFatal = (component: string, error: any, context?: any) => sentryManager.logFatal(error, context);
 export const updateSentryConfiguration = (dsn?: string, environment?: string) => sentryHelper.updateSentryConfiguration(dsn, environment);
 export const captureError = (error: Error | string, context?: any) => sentryManager.captureError(error, context);
 
 // Legacy hook exports for backward compatibility
 // Using original hooks for stability - refactored versions have React context issues
-export { useSentryHelper, useSimpleSentry, useWorkflowSentry } from '../hooks/useSentryHelper';
 
 // Additional hook exports for backward compatibility
 export { useGameCronSentry } from './hooks/useGameCronSentry';

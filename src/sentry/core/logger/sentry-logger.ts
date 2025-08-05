@@ -41,22 +41,20 @@ export class SentryLogger implements ILogger {
 
     logInfo(message: string, context?: Record<string, any>): void {
         if (this.isLoggingEnabled(SentryLogLevel.INFO)) {
-            Sentry.addBreadcrumb({
-                category: this.componentName,
-                message,
+            Sentry.captureMessage(message, {
                 level: 'info',
-                data: context
+                tags: { component: this.componentName },
+                extra: context
             });
         }
     }
 
     logWarning(message: string, context?: Record<string, any>): void {
         if (this.isLoggingEnabled(SentryLogLevel.WARN)) {
-            Sentry.addBreadcrumb({
-                category: this.componentName,
-                message,
+            Sentry.captureMessage(message, {
                 level: 'warning',
-                data: context
+                tags: { component: this.componentName },
+                extra: context
             });
         }
     }

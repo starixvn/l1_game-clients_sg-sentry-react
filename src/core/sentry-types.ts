@@ -90,5 +90,5 @@ export interface UseSentryHelperOptions {
     logLevel?: SentryLogLevel;
     enableWorkflowTracking?: boolean;
     enablePerformanceTracking?: boolean;
-    autoInitialize?: boolean;
+    autoConfigure?: boolean;
 } 

@@ -9,17 +9,18 @@ import {
     GlobalSentryConfig,
     UseSentryHelperOptions
 } from '../core/sentry-types';
+import { SentryManager } from '../core/sentry-manager';
 
 /**
- * Refactored SentryHelper that follows SOLID principles
+ * SentryHelper that follows SOLID principles
  * - Single Responsibility: Manages component-specific Sentry operations
  * - Open/Closed: Extensible through dependency injection
  * - Liskov Substitution: Uses interfaces
  * - Interface Segregation: Uses specific interfaces
  * - Dependency Inversion: Depends on abstractions
  */
-export class SentryHelperRefactored {
-    private static instance: SentryHelperRefactored;
+export class SentryHelper {
+    private static instance: SentryHelper;
     private globalConfig: GlobalSentryConfig;
     private componentLoggers: Map<string, ILogger>;
     private workflowTrackers: Map<string, IWorkflowTracker>;
@@ -41,12 +42,12 @@ export class SentryHelperRefactored {
         };
     }
 
-    static getInstance(): SentryHelperRefactored {
-        if (!SentryHelperRefactored.instance) {
+    static getInstance(): SentryHelper {
+        if (!SentryHelper.instance) {
             const configStorage = new SentryConfigStorage();
-            SentryHelperRefactored.instance = new SentryHelperRefactored(configStorage);
+            SentryHelper.instance = new SentryHelper(configStorage);
         }
-        return SentryHelperRefactored.instance;
+        return SentryHelper.instance;
     }
 
     initialize(config?: Partial<GlobalSentryConfig>): void {
@@ -176,9 +177,32 @@ export class SentryHelperRefactored {
     }
 
     updateSentryConfiguration(dsn?: string, environment?: string): void {
-        // This would typically update the global Sentry configuration
-        // For now, we'll just log the update
-        console.info('Sentry configuration updated', { dsn, environment });
+        if (dsn && environment) {
+            try {
+                // Initialize SentryManager with the configuration
+                const sentryManager = SentryManager.getInstance();
+                sentryManager.initialize({
+                    dsn: dsn,
+                    environment: environment,
+                    componentName: 'SentryHelper',
+                    logLevel: SentryLogLevel.INFO,
+                    debug: true,
+                    enableWorkflowTracking: true,
+                    enablePerformanceTracking: true
+                });
+
+                // Also update the global configuration
+                this.globalConfig.enabled = true;
+                this.globalConfig.defaultLogLevel = SentryLogLevel.INFO;
+
+                this.logInfo('SentryHelper', 'Sentry configuration updated successfully', { dsn, environment });
+            } catch (error) {
+                console.error('Failed to update Sentry configuration:', error);
+                this.logError('SentryHelper', error instanceof Error ? error : String(error), { dsn, environment });
+            }
+        } else {
+            this.logWarning('SentryHelper', 'Sentry configuration update skipped - missing DSN or environment', { dsn, environment });
+        }
     }
 
     // Storage methods

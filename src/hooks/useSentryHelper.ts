@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useMemo } from 'react';
-import { SentryHelper } from '../utils/sentry-helper';
+import { SentryHelper } from '../sentry/utils/sentry-helper';
 import { SentryLogLevel, WorkflowState, UseSentryHelperOptions } from '../core/sentry-types';
 
 export const useSentryHelper = (options: UseSentryHelperOptions = {}) => {
@@ -8,20 +8,20 @@ export const useSentryHelper = (options: UseSentryHelperOptions = {}) => {
         logLevel = SentryLogLevel.INFO,
         enableWorkflowTracking = true,
         enablePerformanceTracking = true,
-        autoInitialize = true
+        autoConfigure = true
     } = options;
 
     const sentryHelper = useMemo(() => SentryHelper.getInstance(), []);
 
     useEffect(() => {
-        if (autoInitialize) {
+        if (autoConfigure) {
             sentryHelper.configureComponent(componentName, {
                 logLevel,
                 enableWorkflowTracking,
                 enablePerformanceTracking
             });
         }
-    }, [componentName, logLevel, enableWorkflowTracking, enablePerformanceTracking, autoInitialize, sentryHelper]);
+    }, [componentName, logLevel, enableWorkflowTracking, enablePerformanceTracking, autoConfigure, sentryHelper]);
 
     const logTrace = useCallback((message: string, context?: Record<string, any>) => {
         sentryHelper.logTrace(componentName, message, context);
@@ -59,7 +59,7 @@ export const useSentryHelper = (options: UseSentryHelperOptions = {}) => {
         return sentryHelper.trackPerformance(componentName, operation, fn);
     }, [componentName, sentryHelper]);
 
-    const isLoggingEnabled = useCallback((level: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal') => {
+    const isLoggingEnabled = useCallback((level: SentryLogLevel) => {
         return sentryHelper.isLoggingEnabled(componentName, level);
     }, [componentName, sentryHelper]);
 
@@ -92,7 +92,7 @@ export const useSentryHelper = (options: UseSentryHelperOptions = {}) => {
 };
 
 export const useSimpleSentry = (componentName: string = 'UnknownComponent') => {
-    return useSentryHelper({ componentName, autoInitialize: false });
+    return useSentryHelper({ componentName, autoConfigure: false });
 };
 
 export const useWorkflowSentry = (componentName: string = 'UnknownComponent') => {
